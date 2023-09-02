@@ -1,0 +1,38 @@
+<!---
+This is the HTML file that displays your landing page using vue.js
+--->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue.js Landing Page</title>
+    <!-- Include vue.js from CDN -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2"></script> -->
+    <!-- Include vue.js from static directory -->
+    <script src="/static/vue.js"></script>
+</head>
+<body>
+    <h1>heading at top</h1>
+    <div id="app">
+        <h1>[[ message ]]</h1>
+        <p>{{ result }}</p> <!-- Display data from Flask -->
+        <p v-pre>{{ object.name }}</p> <!-- Display data from vue.js -->
+
+        <br>
+        <h1>{{ message }}</h1>
+        <h1>{{ result_1 }}</h1>
+        <h1>{{ result_3 }}</h1>
+        <h1>[[ result_3 ]]</h1> <!-- Display data from vue.js -->
+        <br>
+        asdfasdfasdfsdafsdfasdf
+        <br>
+        <input v-model="result_1" placeholder="result_1">
+        <br>
+        <input v-model="result_2" placeholder="result_2">
+        <br>
+        asdfasdfsafsd
+    </div>    
+</body>
+</html>
+<!-- Include main.js from static directory -->
+<script src="/static/main.js"></script>
