@@ -1,0 +1,54 @@
+td{
+    background-blend-mode: multiply;
+    color: black;
+    font-weight: 500;
+}
+.white{
+    background-color: rgb(255, 241, 194);
+}
+.grey{
+    background-color: rgb(255, 243, 215);
+}
+.weekend_{
+    background-blend-mode: multiply;
+    background-image: url('/css/images/weekendpx.png');
+    color: white;
+}
+.weeknumber{
+    background-blend-mode: multiply;
+    background-image: url('/css/images/weeknumberpx.png');
+    color: white;
+}
+.month, .weeknumber{
+    background-blend-mode: multiply;
+    background-image: url('/css/images/monthpx.png');
+    color: white;
+    font-weight: bold;
+}
+.weekend_booked{
+    background-blend-mode: multiply, screen;
+    color: grey;
+    font-weight: 500;
+    background-image: url('/css/images/weekendbookedpx.png'), url('/css/images/bookedpx.png');
+}
+.booked{
+    background-blend-mode: screen;
+    color: grey;
+    font-weight: 500;
+    background-image: url('/css/images/bookedpx.png');
+}
+.weekend_head{
+    background-blend-mode: multiply, multiply;
+    color: black;
+    font-weight: 500;
+    background-image: url('/css/images/weekendpx.png'), url('/css/images/headpx.png');
+}
+.head{
+    background-blend-mode: multiply;
+    color: black;
+    font-weight: 500;
+    background-image: url('/css/images/headpx.png');
+}
+.admin{
+    color: black;
+}

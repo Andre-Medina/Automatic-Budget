@@ -1,38 +1,98 @@
 <!---
 This is the HTML file that displays your landing page using vue.js
 --->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Vue.js Landing Page</title>
-    <!-- Include vue.js from CDN -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2"></script> -->
-    <!-- Include vue.js from static directory -->
-    <script src="/static/vue.js"></script>
-</head>
-<body>
-    <h1>heading at top</h1>
-    <div id="app">
-        <h1>[[ message ]]</h1>
-        <p>{{ result }}</p> <!-- Display data from Flask -->
-        <p v-pre>{{ object.name }}</p> <!-- Display data from vue.js -->
+{% extends "base.html" %}
 
-        <br>
-        <h1>{{ message }}</h1>
-        <h1>{{ result_1 }}</h1>
-        <h1>{{ result_3 }}</h1>
-        <h1>[[ result_3 ]]</h1> <!-- Display data from vue.js -->
-        <br>
-        asdfasdfasdfsdafsdfasdf
-        <br>
-        <input v-model="result_1" placeholder="result_1">
-        <br>
-        <input v-model="result_2" placeholder="result_2">
-        <br>
-        asdfasdfsafsd
-    </div>    
-</body>
-</html>
+{% block title %}
+Vue.js Landing Page
+{% endblock %}
+<!--
+██████╗  ██████╗ ██████╗ ██╗   ██╗
+██╔══██╗██╔═══██╗██╔══██╗╚██╗ ██╔╝
+██████╔╝██║   ██║██║  ██║ ╚████╔╝ 
+██╔══██╗██║   ██║██║  ██║  ╚██╔╝  
+██████╔╝╚██████╔╝██████╔╝   ██║   
+╚═════╝  ╚═════╝ ╚═════╝    ╚═╝   
+-->
+{% block content %}
+    <section id="main" class="wrapper style1">
+        <header class="major">
+            <div class='container'>
+                <h2> Contact Us </h2>
+            </div>
+        </header>
+        <div class='container'>
+        <div id='everything'>
+            <div align='center'>   
+                <h1>Please enter a message and parameters</h1>
+                <form id="myform" method="POST" action="">
+                    <br>
+                    <div>
+                        <span style="font-size: 2em;">Text:</span>      
+                        <input id="textToPrint" style="width: 30%;" type="text" name="user" placeholder="Text" value="test">
+                    </div>
+                    <br/>
+                    <div>
+                        <span style="font-size: 2em;">Start of each line:</span>      
+                        <input id="startLine" style="width: 30%;" type="text" name="user" placeholder="Start of line" value="#">
+                    </div>
+                    <br/>
+                    <div>
+                        <span style="font-size: 2em;">White Space:</span>      
+                        <input id="whiteSpace" style="width: 30%;" type="text" name="user" placeholder="white space" value="0">
+                    </div>
+                    <br/>
+                    <div>
+                        <span style="font-size: 2em;">Start of each block:</span>      
+                        <input id="startBlock" style="width: 30%;" type="text" name="user" placeholder="Start of block" value="">
+                    </div>
+                    <br/>
+                    <div>
+                        <span style="font-size: 2em;">End of each block:</span>      
+                        <input id="endBlock" style="width: 30%;" type="text" name="user" placeholder="end of block" value="">
+                    </div>
+                    <br/>
+                    <div>
+                        <input class="button fit" name="submit" value="Submit">
+                    </div>
+                </form>  
+            </div>
+            <br>
+            <div class="12u">
+                <div class="row uniform center">
+                    <div class="12u">
+                        <h1>{{ message }}</h1>
+                        <h1>{{ result_1 }}</h1>
+                        <h1>{{ result_3 }}</h1>
+                        <h1>[[ result_3 ]]</h1> <!-- Display data from vue.js -->
+                        <h1>[[ message ]]</h1>
+                        <p>{{ result }}</p> <!-- Display data from Flask -->
+                        <p v-pre>{{ object.name }}</p> <!-- Display data from vue.js -->
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div>
+                <div class="8u -2u">
+                    <div class="row uniform center">
+                        <div class="12u">
+                            <br>
+                            asdfasdfasdfsdafsdfasdf
+                            <br>
+                            <input v-model="result_1" placeholder="result_1">
+                            <br>
+                            <input v-model="result_2" placeholder="result_2">
+                            <br>
+                            asdfasdfsafsd
+                        </div>
+                    </div>
+                </div>
+			</form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block end_script %}
 <!-- Include main.js from static directory -->
 <script src="/static/main.js"></script>
+{% endblock %}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <!-- header script -->
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Andre Medina">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    
+    <!-- Include vue.js from static directory -->
+    <script src="/static/vue.js"></script>
+
+    <link rel="icon" href="/images/icon.png" type="image/png" />
+    <link rel="stylesheet" type="text/css" src="static/css/modal.css">
+    <link rel="stylesheet" type="text/css" src="static/css/style.css">
+    
+    <link rel="stylesheet" type="text/css" href="static/css/skel.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/style-xlarge.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="static/static/main.css"> -->
+    </noscript>
+    
+    <script>
+        // prints loaded
+        import { onMounted } from 'vue'
+        
+        export default {
+        setup() {
+            onMounted(() => {
+            console.log('loaded')
+            })
+        }
+        }
+    </script>
+</head>
+<body>
+    <!-- navigation bar -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact</a></li>
+        </ul>
+    </nav>
+    <!-- content -->
+    {% block content %}
+    {% endblock %}
+</body>
+{% block end_script %}
+{% endblock %}
+</html>
