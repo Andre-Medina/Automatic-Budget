@@ -33,7 +33,7 @@ Vue.js Landing Page
             </div>
         </header>
         <div class='container'>
-        <div id='everything'>
+        <div id='app'>  <!-- id = 'app' is crutial -->
             <div align='center'>   
                 <h1>Please enter a message and parameters</h1>
                 <form id="myform" method="POST" action="">
@@ -80,6 +80,11 @@ Vue.js Landing Page
                             </li>
                         </ul>
                     </div>
+                    <div>
+                        
+                        <p>Name: [[data]]<p>
+                        <!-- <p>Age: [[data.age ]]</p> -->
+                    </div>
                     <br/>
                     <div>
                         <input class="button fit" name="submit" value="Submit">
@@ -123,32 +128,7 @@ Vue.js Landing Page
 
 {% block end_script %}
 <!-- Include main.js from static directory -->
-<!-- <script src="/static/main.js"></script> -->
-<script type="module">
-    
-
-
-// Create a vue instance
-var app = new Vue({
-    // Bind it to an element with id="app"
-    el: '#app',
-    // Define the data for your app
-    delimiters: ['[[', ']]'],
-    data: {
-        message: 'Hello Vue!',
-        result_1: js_result_1,//document.getElementById("data_result_1").innerHTML,
-        result_2: js_result_2,
-        result_3: "This is result 3" // Define result_3 variable
-    }
-});
-
-export default {
-  data() {
-    return {
-        result_1: "Hello Vue!"
-    };
-  }
-};
+<script type="module" src="/static/main.js"></script>
 </script>
 
 
