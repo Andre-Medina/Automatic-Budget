@@ -1,0 +1,114 @@
+{
+    "F": [
+        "Food",
+        {
+            "F": [
+                "Fast",
+                {
+                    "d": [
+                        "Dessert",
+                        {}
+                    ],
+                    "b": [
+                        "Bahn Mi",
+                        {}
+                    ],
+                    "m": [
+                        "Maccas",
+                        {}
+                    ],
+                    "p": [
+                        "Pizza",
+                        {}
+                    ],
+                    "k": [
+                        "Kebab",
+                        {}
+                    ],
+                    "s": [
+                        "Sushi",
+                        {}
+                    ],
+                    "v": [
+                        "Veggie",
+                        {}
+                    ],
+                    "c": [
+                        "Cafe",
+                        {}
+                    ],
+                    "a": [
+                        "Asian",
+                        {}
+                    ],
+                    "x": [
+                        "Mexican",
+                        {}
+                    ],
+                    "h": [
+                        "Hamburger",
+                        {}
+                    ],
+                    "f": [
+                        "Fish and Chips",
+                        {}
+                    ],
+                    "i": [
+                        "Ice-Cream",
+                        {}
+                    ],
+                    "r": [
+                        "KFC/ Red rooster",
+                        {}
+                    ]
+                }
+            ],
+            "E": [
+                "Eating In",
+                {
+                    "p": [
+                        "Italian",
+                        {}
+                    ],
+                    "I": [
+                        "Indian",
+                        {}
+                    ],
+                    "l": [
+                        "Luksa",
+                        {}
+                    ],
+                    "h": [
+                        "Hot Chicken",
+                        {}
+                    ],
+                    "a": [
+                        "Asian",
+                        {}
+                    ],
+                    "c": [
+                        "Cafe",
+                        {}
+                    ],
+                    "b": [
+                        "Pub/ Bar",
+                        {}
+                    ]
+                }
+            ]
+        }
+    ],
+    "G": [
+        "Groceries",
+        {
+            "S": [
+                "Snacks",
+                {}
+            ],
+            "G": [
+                "Actual Groceries",
+                {}
+            ]
+        }
+    ]
+}

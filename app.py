@@ -5,12 +5,13 @@ main file used to run the server
 '''
 
 # Import Flask and other packages
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from markupsafe import Markup
 
+ROOT_DIR = ""
+
 # Import modules from modules subdirectory
-from modules import *
-import modules
+import modules as md
 
 # Create an instance of Flask class
 app = Flask(__name__)
@@ -35,6 +36,10 @@ def index():
         result_3 = result_1 + result_2,
         )
 
+
+
+
+
 @app.route("/elements")
 def elements():
     return render_template(
@@ -47,10 +52,21 @@ def test():
         'test.html'
     )
 
+@app.route("/data/<data_type>/<extra>")
+def get_data(data_type, extra):
+    if data_type == "level":
+        if extra == "1":
+            return jsonify(md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_1))
+        
+        elif extra == "2":
+            return jsonify(md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_2))
+
+    return "page not found"
+
 # Run the app if this file is executed as the main script
 if __name__ == "__main__":
     print('starting')
     # hosts local LAN
-    app.run(host="0.0.0.0", port=5000)
+    # app.run(host="0.0.0.0", port=5000)
     app.run()
     

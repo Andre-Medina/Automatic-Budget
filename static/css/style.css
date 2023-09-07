@@ -210,6 +210,11 @@
 
 
 
+	select option {
+		background-color: var(--background); 
+	  }
+
+
 /* Basic */
 	body {
 		background: var(--body-background);
