@@ -17,8 +17,8 @@ const app = Vue.createApp({
         
         // transactions
         account: 'pink_card',
-        transaction_index: 1,
-        current_transaction: {},
+        transaction_index: 0,
+        current_transaction: null,
       };
     },
     computed: {
@@ -57,6 +57,8 @@ const app = Vue.createApp({
         // console.log(code)
         return code
       },
+
+
     },
     methods: {
       printValue(value){
@@ -139,17 +141,28 @@ const app = Vue.createApp({
 
       // statements
 
+      prev_transaction(){
+        if(this.transaction_index <= 0){
+          console.log('far enough')
+          return
+        }
+        this.transaction_index --
+        this.update_current_transaction()
+      },
       next_transaction(){
+        this.transaction_index ++
+        this.update_current_transaction()
+      },
+      // calculates current transaction
+      update_current_transaction(){
         fetch("/data/statement/" + this.account + '?transaction=' + this.transaction_index, {method:'GET'})
           .then((response) => response.json())
           .then((returned) => {
-            console.log('data:');
+            console.log('data: for index ' + this.transaction_index);
             console.log(returned);
             this.current_transaction = returned.data
-            this.transaction_index ++
           });
-      }
-
+      },
     },
     mounted() {
       fetch("/data/level/1", {method:'GET'})
@@ -165,7 +178,7 @@ const app = Vue.createApp({
         .then((returned) => {
           this.description_levels.level_2 = returned.data;
         });
-      console.log(this.$route.query);
+      this.update_current_transaction();
       
     },
     

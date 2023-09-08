@@ -38,8 +38,32 @@ Vue.js Landing Page
                 <h1>Please enter a message and parameters</h1>
                 <form id="myform" method="POST" action="">
                     <br>
-                    <div>
-                        
+                    <div class="row">
+                        <div class="4u">
+                            <ul class="actions">
+                                <li><a @click.prevent="prev_transaction()" class="button">Back</a></li>
+                                <li><a @click.prevent="next_transaction()" class="button">Next</a></li>
+                            </ul>
+                        </div> 
+                        <div class="8u table-wrapper">			
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>a</th>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-if="current_transaction">
+                                        <td>[[current_transaction.date]]</td>
+                                        <td>[[current_transaction.description]]</td>
+                                        <td>[[current_transaction.amount]]</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div>
                         <span style="font-size: 2em;">Text:</span>      
@@ -81,37 +105,6 @@ Vue.js Landing Page
                     </div>
                 </form>  
             </div>
-            <br>
-            <div class="12u">
-                <div class="row uniform center">
-                    <div class="12u">
-                        <h1>message flask {{ message }}</h1>
-                        <h1>result flask {{ result_1 }}</h1>
-                        <h1>flask {{ result_3 }}</h1>
-                        <h1>vue [[result_1]]</h1> <!-- Display data from vue.js -->
-                        <h1>vue [[ message ]]</h1>
-                        <p>flask {{ result }}</p> <!-- Display data from Flask -->
-                        <p v-pre>flask {{ object.name }}</p> <!-- Display data from vue.js -->
-                    </div>
-                </div>
-            </div>
-            <br>
-            <div>
-                <div class="8u -2u">
-                    <div class="row uniform center">
-                        <div class="12u">
-                            <br>
-                            asdfasdfasdfsdafsdfasdf
-                            <br>
-                            <input v-model="result_1" placeholder="result_1">
-                            <br>
-                            <input v-model="result_2" placeholder="result_2">
-                            <br>
-                            asdfasdfsafsd
-                        </div>
-                    </div>
-                </div>
-			</form>
         </div>
     </div>
 {% endblock %}
