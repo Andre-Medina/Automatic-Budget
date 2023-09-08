@@ -40,41 +40,25 @@ Vue.js Landing Page
                     <br>
                     <div>
                         <span style="font-size: 2em;">Text:</span>      
-                        <input id="textToPrint" style="width: 30%;" type="text" name="user" placeholder="Text" value="test">
+                        <input id="textToPrint" style="width: 30%;" type="text" name="user" placeholder="Text">
                     </div>
                     <br/>
-                    <div>
-                        <span style="font-size: 2em;">Start of each line:</span>      
-                        <input id="startLine" style="width: 30%;" type="text" name="user" placeholder="Start of line" value="#">
-                    </div>
-                    <br/>
-                    <div>
-                        <span style="font-size: 2em;">White Space:</span>      
-                        <input id="whiteSpace" style="width: 30%;" type="text" name="user" placeholder="white space" value="0">
-                    </div>
-                    <br/>
-                    <div>
-                        <span style="font-size: 2em;">Start of each block:</span>      
-                        <input id="startBlock" style="width: 30%;" type="text" name="user" placeholder="Start of block" value="">
-                    </div>
-                    <br/>
-                    <div>
-                        <span style="font-size: 2em;">End of each basdfsdflock:</span>      
-                        <input id="endBlock" style="width: 30%;" type="text" name="user" placeholder="end of block" value="">
-                    </div>
                     <div>
                         <ul class="actions fit">
-                            <li><a class="button fit">Fit</a></li>
-                            <li><a class="button fit">Fit</a></li>
-                            <li><a class="button fit">Fit</a></li>
-                            <li>
+                            <li><a class="button fit" @click="printValue('hello')">Fit</a></li>
+                            <li v-if="description_levels.level_1" >
                                 <div class="select-wrapper">
-                                    <select name="category" id="category">
-                                        <option value="">- Category -</option>
-                                        <option value="1">Manufacturing</option>
-                                        <option value="1">Shipping</option>
-                                        <option value="1">Administration</option>
-                                        <option value="1">Human Resources</option>
+                                    <select v-model="selected_index[0]" @change="set_description($event.target.value, 0)">
+                                        <option>-</option>
+                                        <option v-for="(level, index) in description_levels.level_1" :value="index" key="index">[[level.code]] - [[level.description]]</option>
+                                    </select>
+                                </div>
+                            </li>
+                            <li v-if="description_levels.level_2"  v-for="level_index in (level_depth)"> <!--- Object.keys(description_levels.level_2).length"> --->
+                                <div class="select-wrapper">
+                                    <select name="category" id="category" v-model="selected_index[level_index]" @change="set_description($event.target.value, level_index)">
+                                        <option>-</option>
+                                        <option v-for="(level, index) in selected_levels[level_index]" :value="index" key="index">[[level.code]] - [[level.description]]</option>
                                     </select>
                                 </div>
                             </li>
@@ -98,7 +82,7 @@ Vue.js Landing Page
                         <h1>message flask {{ message }}</h1>
                         <h1>result flask {{ result_1 }}</h1>
                         <h1>flask {{ result_3 }}</h1>
-                        <h1>vue [[result_3]]</h1> <!-- Display data from vue.js -->
+                        <h1>vue [[result_1]]</h1> <!-- Display data from vue.js -->
                         <h1>vue [[ message ]]</h1>
                         <p>flask {{ result }}</p> <!-- Display data from Flask -->
                         <p v-pre>flask {{ object.name }}</p> <!-- Display data from vue.js -->

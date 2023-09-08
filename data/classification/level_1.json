@@ -1,42 +1,52 @@
-{
-    "0": [
-        "Personal",
-        {}
-    ],
-    "1": [
-        "Business",
-        {}
-    ],
-    "2": [
-        "Loaning",
-        {}
-    ],
-    "3": [
-        "Hosting",
-        {}
-    ],
-    "4": [
-        "Big Trip",
-        {}
-    ],
-    "5": [
-        "Amber",
-        {}
-    ],
-    "6": [
-        "Social",
-        {}
-    ],
-    "7": [
-        "Birthday",
-        {}
-    ],
-    "8": [
-        "Christmas",
-        {}
-    ],
-    "9": [
-        "Special Occasion",
-        {}
-    ]
-}
+[
+    {
+        "code": 0,
+        "description": "Personal",
+        "next": []
+    },
+    {
+        "code": 1,
+        "description": "Business",
+        "next": []
+    },
+    {
+        "code": 2,
+        "description": "Loaning",
+        "next": []
+    },
+    {
+        "code": 3,
+        "description": "Hosting",
+        "next": []
+    },
+    {
+        "code": 4,
+        "description": "Big Trip",
+        "next": []
+    },
+    {
+        "code": 5,
+        "description": "Amber",
+        "next": []
+    },
+    {
+        "code": 6,
+        "description": "Social",
+        "next": []
+    },
+    {
+        "code": 7,
+        "description": "Birthday",
+        "next": []
+    },
+    {
+        "code": 8,
+        "description": "Christmas",
+        "next": []
+    },
+    {
+        "code": 9,
+        "description": "Special Occasion",
+        "next": []
+    }
+]

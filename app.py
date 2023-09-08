@@ -5,7 +5,7 @@ main file used to run the server
 '''
 
 # Import Flask and other packages
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from markupsafe import Markup
 
 ROOT_DIR = ""
@@ -52,16 +52,25 @@ def test():
         'test.html'
     )
 
-@app.route("/data/<data_type>/<extra>")
+@app.route("/data/<data_type>/<extra>", methods=['GET'])
 def get_data(data_type, extra):
-    if data_type == "level":
-        if extra == "1":
-            return jsonify(md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_1))
+    response_object = {'status': 'success'}
+    if request.method == "GET":
         
-        elif extra == "2":
-            return jsonify(md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_2))
+        if data_type == "level":
+            if extra == "1":
+                response_object['data'] =  md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_1)
 
-    return "page not found"
+            elif extra == "2":
+                response_object['data'] = md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_2)
+
+        else:
+            response_object['data'] = "page not found"
+
+    else:
+        response_object['data'] = "please use get"
+    
+    return jsonify(response_object)
 
 # Run the app if this file is executed as the main script
 if __name__ == "__main__":

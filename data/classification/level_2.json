@@ -1,114 +1,151 @@
-{
-    "F": [
-        "Food",
-        {
-            "F": [
-                "Fast",
-                {
-                    "d": [
-                        "Dessert",
-                        {}
-                    ],
-                    "b": [
-                        "Bahn Mi",
-                        {}
-                    ],
-                    "m": [
-                        "Maccas",
-                        {}
-                    ],
-                    "p": [
-                        "Pizza",
-                        {}
-                    ],
-                    "k": [
-                        "Kebab",
-                        {}
-                    ],
-                    "s": [
-                        "Sushi",
-                        {}
-                    ],
-                    "v": [
-                        "Veggie",
-                        {}
-                    ],
-                    "c": [
-                        "Cafe",
-                        {}
-                    ],
-                    "a": [
-                        "Asian",
-                        {}
-                    ],
-                    "x": [
-                        "Mexican",
-                        {}
-                    ],
-                    "h": [
-                        "Hamburger",
-                        {}
-                    ],
-                    "f": [
-                        "Fish and Chips",
-                        {}
-                    ],
-                    "i": [
-                        "Ice-Cream",
-                        {}
-                    ],
-                    "r": [
-                        "KFC/ Red rooster",
-                        {}
-                    ]
-                }
-            ],
-            "E": [
-                "Eating In",
-                {
-                    "p": [
-                        "Italian",
-                        {}
-                    ],
-                    "I": [
-                        "Indian",
-                        {}
-                    ],
-                    "l": [
-                        "Luksa",
-                        {}
-                    ],
-                    "h": [
-                        "Hot Chicken",
-                        {}
-                    ],
-                    "a": [
-                        "Asian",
-                        {}
-                    ],
-                    "c": [
-                        "Cafe",
-                        {}
-                    ],
-                    "b": [
-                        "Pub/ Bar",
-                        {}
-                    ]
-                }
-            ]
-        }
-    ],
-    "G": [
-        "Groceries",
-        {
-            "S": [
-                "Snacks",
-                {}
-            ],
-            "G": [
-                "Actual Groceries",
-                {}
-            ]
-        }
-    ]
-}
+[
+    {
+        "code": "F",
+        "description": "Food",
+        "next": [
+            {
+                "code": "F",
+                "description": "Fast",
+                "next": [
+                    {
+                        "code": "d",
+                        "description": "Dessert",
+                        "next": []
+                    },
+                    {
+                        "code": "b",
+                        "description": "Bahn Mi",
+                        "next": []
+                    },
+                    {
+                        "code": "m",
+                        "description": "Maccas",
+                        "next": []
+                    },
+                    {
+                        "code": "p",
+                        "description": "Pizza",
+                        "next": []
+                    },
+                    {
+                        "code": "k",
+                        "description": "Kebab",
+                        "next": []
+                    },
+                    {
+                        "code": "s",
+                        "description": "Sushi",
+                        "next": []
+                    },
+                    {
+                        "code": "v",
+                        "description": "Veggie",
+                        "next": []
+                    },
+                    {
+                        "code": "c",
+                        "description": "Cafe",
+                        "next": []
+                    },
+                    {
+                        "code": "a",
+                        "description": "Asian",
+                        "next": []
+                    },
+                    {
+                        "code": "x",
+                        "description": "Mexican",
+                        "next": []
+                    },
+                    {
+                        "code": "h",
+                        "description": "Hamburger",
+                        "next": []
+                    },
+                    {
+                        "code": "f",
+                        "description": "Fish and Chips",
+                        "next": []
+                    },
+                    {
+                        "code": "i",
+                        "description": "Ice-Cream",
+                        "next": []
+                    },
+                    {
+                        "code": "r",
+                        "description": "KFC/ Red rooster",
+                        "next": []
+                    }
+                ]
+            },
+            {
+                "code": "E",
+                "description": "Eating In",
+                "next": [
+                    {
+                        "code": "p",
+                        "description": "Italian",
+                        "next": []
+                    },
+                    {
+                        "code": "I",
+                        "description": "Indian",
+                        "next": []
+                    },
+                    {
+                        "code": "l",
+                        "description": "Luksa",
+                        "next": []
+                    },
+                    {
+                        "code": "h",
+                        "description": "Hot Chicken",
+                        "next": []
+                    },
+                    {
+                        "code": "a",
+                        "description": "Asian",
+                        "next": []
+                    },
+                    {
+                        "code": "c",
+                        "description": "Cafe",
+                        "next": []
+                    },
+                    {
+                        "code": "b",
+                        "description": "Pub/ Bar",
+                        "next": []
+                    },
+                    {
+                        "code": "c",
+                        "description": "Cafe",
+                        "next": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "code": "G",
+        "description": "Groceries",
+        "next": [
+            {
+                "code": "S",
+                "description": "Snacks",
+                "next": []
+            },
+            {
+                "code": "G",
+                "description": "Acutal Groceries",
+                "next": []
+            }
+        ]
+    },
+    {
+        "code": "W",
+        "description": "Wall",
+        "next": []
+    }
+]
