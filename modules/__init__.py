@@ -7,9 +7,11 @@ main python file for importing the python code
 import json
 
 from .constants import *
+from .statements import *
 
 __all__ = [
     'constants',
+    'statements',
     'json_save',
     'json_read',
     'text_save',

@@ -39,6 +39,9 @@ Vue.js Landing Page
                 <form id="myform" method="POST" action="">
                     <br>
                     <div>
+                        
+                    </div>
+                    <div>
                         <span style="font-size: 2em;">Text:</span>      
                         <input id="textToPrint" style="width: 30%;" type="text" name="user" placeholder="Text">
                     </div>
@@ -71,7 +74,10 @@ Vue.js Landing Page
                     </div>
                     <br/>
                     <div>
-                        <input class="button fit" name="submit" value="Submit">
+                        <input class="button fit" name="submit" value="Submit" @click.prevent="next_transaction()">
+                    </div>
+                    <div>
+                        [[current_transaction]]
                     </div>
                 </form>  
             </div>

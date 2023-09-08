@@ -14,7 +14,11 @@ const app = Vue.createApp({
         },
         selected_code: [null],
         selected_levels: [null],
-        current_transaction: {}
+        
+        // transactions
+        account: 'pink_card',
+        transaction_index: 1,
+        current_transaction: {},
       };
     },
     computed: {
@@ -127,11 +131,23 @@ const app = Vue.createApp({
         return selected
       },
 
-
       // resets code
       reset_code(){
         this.selected_code = [null]
         this.selected_levels = [this.description_levels.level_1]
+      },
+
+      // statements
+
+      next_transaction(){
+        fetch("/data/statement/" + this.account + '?transaction=' + this.transaction_index, {method:'GET'})
+          .then((response) => response.json())
+          .then((returned) => {
+            console.log('data:');
+            console.log(returned);
+            this.current_transaction = returned.data
+            this.transaction_index ++
+          });
       }
 
     },
@@ -149,7 +165,8 @@ const app = Vue.createApp({
         .then((returned) => {
           this.description_levels.level_2 = returned.data;
         });
-
+      console.log(this.$route.query);
+      
     },
     
 

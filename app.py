@@ -13,6 +13,9 @@ ROOT_DIR = ""
 # Import modules from modules subdirectory
 import modules as md
 
+
+statements = md.statements.Statements()
+
 # Create an instance of Flask class
 app = Flask(__name__)
 
@@ -64,6 +67,11 @@ def get_data(data_type, extra):
             elif extra == "2":
                 response_object['data'] = md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_2)
 
+        elif data_type == "statement":
+            extra
+            transaction = request.args.get('transaction', default = 0, type = int)
+            response_object['data'] = statements.get_transaction(extra, transaction)
+
         else:
             response_object['data'] = "page not found"
 
@@ -71,6 +79,10 @@ def get_data(data_type, extra):
         response_object['data'] = "please use get"
     
     return jsonify(response_object)
+
+
+
+
 
 # Run the app if this file is executed as the main script
 if __name__ == "__main__":
