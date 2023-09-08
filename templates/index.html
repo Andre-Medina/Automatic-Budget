@@ -54,7 +54,7 @@ Vue.js Landing Page
                                     </select>
                                 </div>
                             </li>
-                            <li v-if="description_levels.level_2"  v-for="level_index in (level_depth)"> <!--- Object.keys(description_levels.level_2).length"> --->
+                            <li v-if="description_levels.level_2"  v-for="level_index in (level_depth - 1)"> <!--- Object.keys(description_levels.level_2).length"> --->
                                 <div class="select-wrapper">
                                     <select name="category" id="category" v-model="selected_index[level_index]" @change="set_description($event.target.value, level_index)">
                                         <option>-</option>

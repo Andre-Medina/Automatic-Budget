@@ -92,6 +92,7 @@ const app = Vue.createApp({
         
         // returns and prints selected
         // console.log(selected)
+
         return selected
       }
     },
