@@ -45,20 +45,20 @@ Vue.js Landing Page
                     <br/>
                     <div>
                         <ul class="actions fit">
-                            <li><a class="button fit" @click="printValue('hello')">Fit</a></li>
+                            <li><a class="button fit" @click="reset_code()">clear code</a></li>
                             <li v-if="description_levels.level_1" >
                                 <div class="select-wrapper">
-                                    <select v-model="selected_index[0]" @change="set_description($event.target.value, 0)">
+                                    <select v-model="selected_code[0]" @change="set_description($event.target.value, 0)">
                                         <option>-</option>
-                                        <option v-for="(level, index) in description_levels.level_1" :value="index" key="index">[[level.code]] - [[level.description]]</option>
+                                        <option v-for="code in Object.keys(description_levels.level_1)" :value="code" key="code">[[code]] - [[description_levels.level_1[code].description]]</option>
                                     </select>
                                 </div>
                             </li>
                             <li v-if="description_levels.level_2"  v-for="level_index in (level_depth - 1)"> <!--- Object.keys(description_levels.level_2).length"> --->
-                                <div class="select-wrapper">
-                                    <select name="category" id="category" v-model="selected_index[level_index]" @change="set_description($event.target.value, level_index)">
+                                <div v-if="selected_levels[level_index] && (Object.keys(selected_levels[level_index]).length > 0)" class="select-wrapper">
+                                    <select name="category" id="category" v-model="selected_code[level_index]" @change="set_description($event.target.value, level_index)">
                                         <option>-</option>
-                                        <option v-for="(level, index) in selected_levels[level_index]" :value="index" key="index">[[level.code]] - [[level.description]]</option>
+                                        <option v-for="code in Object.keys(selected_levels[level_index])" :value="code" key="code">[[code]] - [[selected_levels[level_index][code].description]]</option>
                                     </select>
                                 </div>
                             </li>
@@ -66,7 +66,7 @@ Vue.js Landing Page
                     </div>
                     <div>
                         
-                        <p>Name: [[data]]<p>
+                        <p>Code: [[calculate_initial_code]]<p>
                         <!-- <p>Age: [[data.age ]]</p> -->
                     </div>
                     <br/>

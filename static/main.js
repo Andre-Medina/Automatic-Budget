@@ -8,23 +8,51 @@ const app = Vue.createApp({
     // Define the data for your app
     data() {
       return {
-        message: 'Hello Vue!',
-        result_1: js_result_1,
-        result_2: js_result_2,
-        result_3: "This is result 3",
         description_levels: {
           level1: null,
           level2: null
         },
-        selected_index: [null],
-        selected_levels: [null]
+        selected_code: [null],
+        selected_levels: [null],
+        current_transaction: {}
       };
     },
     computed: {
+
+      // calculates depth
       level_depth(){
-        console.log('Depth is now ' + this.selected_index.length)
-        return this.selected_index.length
-      }      
+        console.log('Depth is now ' + this.selected_code.length)
+        return this.selected_code.length
+      },
+      
+      // calculates level code
+      calculate_initial_code(){
+        console.log('calculating code')
+
+        let code = ""
+        
+        // for each level selected
+        for(let level in this.selected_levels){
+          
+          // adds a dash 
+          if(level == 1){
+            code += '-'
+          }
+
+          // if the level exists, and the level includes the seleceted value
+          if(this.selected_levels[level] && Object.keys(this.selected_levels[level]).includes(this.selected_code[level])){
+
+            // adds it, otherwise breaks
+            code += this.selected_code[level]
+          }else{
+            break
+          }
+        }
+        
+        // returns code
+        // console.log(code)
+        return code
+      },
     },
     methods: {
       printValue(value){
@@ -32,26 +60,29 @@ const app = Vue.createApp({
         this.result_1 = value;
       },
       
-      // sets the desction to selected index
-      set_description(index, level){
-        console.log('setting ' + level + " to a index of " + index);
-        while(this.selected_index.length < level + 2){
+      // sets the desction to selected code
+      set_description(code, level){
+        console.log('setting ' + level + " to a code of " + code);
+        while(this.selected_code.length < level + 2){
           this.selected_levels.push(null)
-          this.selected_index.push(null)
+          this.selected_code.push(null)
         }
-        console.log(this.selected_levels)
-        console.log(this.selected_levels[level])
-        setTimeout({},10)
-        this.selected_index[level] = index
+        // console.log('selected levels is \\\|/')
+        // console.log(this.selected_levels)
+        // console.log(this.selected_levels[level])
+        
+        this.selected_code[level] = code
 
-        console.log('description is \\\|/')
-        console.log(this.selected_index)
+        console.log('selected code is \\\|/')
+        console.log(this.selected_code)
 
-        for(let recalc_level = level + 1; recalc_level < this.selected_index.length; recalc_level ++){
-          console.log('calculating levels for ' + recalc_level)
+        for(let recalc_level = level + 1; recalc_level < this.selected_code.length; recalc_level ++){
+          // console.log('calculating levels for ' + recalc_level)
           this.selected_levels[recalc_level] = this.calculate_selected_level(recalc_level)
         }
+        console.log('selected levels is \\\|/')
         console.log(this.selected_levels)
+
       },
 
       // returns the list for the correct level
@@ -63,13 +94,13 @@ const app = Vue.createApp({
         let selected = JSON.parse(JSON.stringify(this.description_levels.level_2));
 
 
-        for(let [level, index] of this.selected_index.entries()){
+        for(let [level, code] of this.selected_code.entries()){
           
           // console.log('level: ' + level)
-          // console.log('index: ' + index)
+          // console.log('code: ' + code)
 
           // if level doesnt exist, breaks
-          if(index == null){
+          if(code == null){
             break
           }
           // if the level is root, skips
@@ -81,20 +112,28 @@ const app = Vue.createApp({
             break
           }
           // if the next level is null, sets it as null
-          if(selected[index] == null){
+          if(selected[code] == null){
             selected = null
             break
           }
           
-          // otherwise good to use index to move to next selection
-          selected = selected[index].next
+          // otherwise good to use code to move to next selection
+          selected = selected[code].next
         }
         
         // returns and prints selected
         // console.log(selected)
 
         return selected
+      },
+
+
+      // resets code
+      reset_code(){
+        this.selected_code = [null]
+        this.selected_levels = [this.description_levels.level_1]
       }
+
     },
     mounted() {
       fetch("/data/level/1", {method:'GET'})

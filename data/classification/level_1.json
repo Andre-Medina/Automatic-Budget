@@ -1,52 +1,42 @@
-[
-    {
-        "code": 0,
+{
+    "0": {
         "description": "Personal",
-        "next": []
+        "next": {}
     },
-    {
-        "code": 1,
+    "1": {
         "description": "Business",
-        "next": []
+        "next": {}
     },
-    {
-        "code": 2,
+    "2": {
         "description": "Loaning",
-        "next": []
+        "next": {}
     },
-    {
-        "code": 3,
+    "3": {
         "description": "Hosting",
-        "next": []
+        "next": {}
     },
-    {
-        "code": 4,
+    "4": {
         "description": "Big Trip",
-        "next": []
+        "next": {}
     },
-    {
-        "code": 5,
+    "5": {
         "description": "Amber",
-        "next": []
+        "next": {}
     },
-    {
-        "code": 6,
+    "6": {
         "description": "Social",
-        "next": []
+        "next": {}
     },
-    {
-        "code": 7,
+    "7": {
         "description": "Birthday",
-        "next": []
+        "next": {}
     },
-    {
-        "code": 8,
+    "8": {
         "description": "Christmas",
-        "next": []
+        "next": {}
     },
-    {
-        "code": 9,
+    "9": {
         "description": "Special Occasion",
-        "next": []
+        "next": {}
     }
-]
+}

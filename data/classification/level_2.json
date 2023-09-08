@@ -1,151 +1,118 @@
-[
-    {
-        "code": "F",
+{
+    "F": {
         "description": "Food",
-        "next": [
-            {
-                "code": "F",
+        "next": {
+            "F": {
                 "description": "Fast",
-                "next": [
-                    {
-                        "code": "d",
+                "next": {
+                    "d": {
                         "description": "Dessert",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "b",
+                    "b": {
                         "description": "Bahn Mi",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "m",
+                    "m": {
                         "description": "Maccas",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "p",
+                    "p": {
                         "description": "Pizza",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "k",
+                    "k": {
                         "description": "Kebab",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "s",
+                    "s": {
                         "description": "Sushi",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "v",
+                    "v": {
                         "description": "Veggie",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "c",
+                    "c": {
                         "description": "Cafe",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "a",
+                    "a": {
                         "description": "Asian",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "x",
+                    "x": {
                         "description": "Mexican",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "h",
+                    "h": {
                         "description": "Hamburger",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "f",
+                    "f": {
                         "description": "Fish and Chips",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "i",
+                    "i": {
                         "description": "Ice-Cream",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "r",
+                    "r": {
                         "description": "KFC/ Red rooster",
-                        "next": []
+                        "next": {}
                     }
-                ]
+                }
             },
-            {
-                "code": "E",
+            "E": {
                 "description": "Eating In",
-                "next": [
-                    {
-                        "code": "p",
+                "next": {
+                    "p": {
                         "description": "Italian",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "I",
+                    "I": {
                         "description": "Indian",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "l",
+                    "l": {
                         "description": "Luksa",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "h",
+                    "h": {
                         "description": "Hot Chicken",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "a",
+                    "a": {
                         "description": "Asian",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "c",
+                    "c": {
                         "description": "Cafe",
-                        "next": []
+                        "next": {}
                     },
-                    {
-                        "code": "b",
+                    "b": {
                         "description": "Pub/ Bar",
-                        "next": []
-                    },
-                    {
-                        "code": "c",
-                        "description": "Cafe",
-                        "next": []
+                        "next": {}
                     }
-                ]
+                }
             }
-        ]
+        }
     },
-    {
-        "code": "G",
+    "G": {
         "description": "Groceries",
-        "next": [
-            {
-                "code": "S",
+        "next": {
+            "S": {
                 "description": "Snacks",
-                "next": []
+                "next": {}
             },
-            {
-                "code": "G",
+            "G": {
                 "description": "Acutal Groceries",
-                "next": []
+                "next": {}
             }
-        ]
+        }
     },
-    {
-        "code": "W",
+    "W": {
         "description": "Wall",
-        "next": []
+        "next": {}
     }
-]
+}
