@@ -39,8 +39,8 @@ Vue.js Landing Page
                 <form id="myform" method="POST" action="">
                     <div class="row">
                         <div class="4u">
-                            <div class="select-wrapper">
-                                <select v-model="current_account" @change="current_account = $event.target.value">
+                            <div v-if="account_names" class="select-wrapper">
+                                <select v-model="current_account" @change="current_account = $event.target.value; update_current_transaction()">
                                     <option>-</option>
                                     <option v-for="account in Object.keys(account_names)" :value="account" :key="account">[[ account_names[account] ]] - [[account]]</option>
                                 </select>
@@ -49,7 +49,7 @@ Vue.js Landing Page
                         <div class="4u">
 
                         </div> 
-                    </div>  
+                    </div>
                     <br>
                     <div class="row">
                         <div class="4u">
@@ -76,7 +76,15 @@ Vue.js Landing Page
                                 </tbody>
                             </table>
                         </div>
+                    </div> 
+                    <br> 
+                    <div>
+                        <ul v-if="movement_types" class="actions fit">
+                            <li v-for="movement_type in movement_types"><a class="button fit" :class="[current_movement_type == movement_type ? 'special' : '']"  @click="current_movement_type = movement_type">[[movement_type]]</a></li>
+                            <!--  -->
+                        </ul>
                     </div>
+                    <br>
                     <div>
                         <span style="font-size: 2em;">Text:</span>      
                         <input style="width: 30%;" type="text" name="user" placeholder="short description" v-model="short_description">
@@ -103,14 +111,35 @@ Vue.js Landing Page
                             </li>
                         </ul>
                     </div>
-                    <div>
+                    <div class="center">			
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Movement</th>
+                                    <th>Amount</th>
+                                    <th>Where</th>
+                                    <th>Why</th>
+                                    <th>Description</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="current_transaction">
+                                    <td>[[current_movement_type]]</td>
+                                    <td>[[current_transaction.amount]]</td>
+                                    <td>[[ account_names[current_account] ]]</td>
+                                    <td>[[calculate_initial_code]]</td>
+                                    <td>[[short_description]]</td>
+                                    <td>[[current_transaction.date]]</td>
+                                </tr>
+                            </tbody>
+                        </table>
                         
-                        <p>Code: [[calculate_initial_code]]   desc: [[short_description]]<p>
                         <!-- <p>Age: [[data.age ]]</p> -->
                     </div>
                     <br/>
-                    <div>
-                        <input class="button fit" name="Submit" @click.prevent="submit_transaction()">
+                    <div class="center">
+                        <a class="button fit" name="Submit" @click.prevent="submit_transaction()">commit</a>
                     </div>
                     <div>
                         [[current_transaction]]

@@ -2,11 +2,6 @@
 This is the JavaScript file that contains the logic for your 
 */
 
-const account_names = {
-  'pink_card': 'bd',
-  'blue_card': 'be',
-  'loan': '2=-l',
-}
 
 
 // Create an app instance
@@ -15,9 +10,10 @@ const app = Vue.createApp({
     data() {
       return {
         // accounts
-        account_names: account_names,
+        account_names: null,
         current_account: null,
-
+        movement_types: null,
+        current_movement_type: null,
 
         // description
         description_levels: {
@@ -52,7 +48,7 @@ const app = Vue.createApp({
           
           // adds a dash 
           if(level == 1){
-            code += '-'
+            code += '='
           }
 
           // if the level exists, and the level includes the seleceted value
@@ -188,10 +184,12 @@ const app = Vue.createApp({
               method:'POST',
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ 
-                amount: this.current_transaction.amount, 
+                movement: this.current_movement_type,
+                amount: clean_price(this.current_transaction.amount), 
                 where: this.current_account, 
                 code: this.calculate_initial_code,
-                desc: this.short_description,
+                description_short: this.short_description,
+                description_full: this.current_transaction.description,
                 date: this.current_transaction.date              
               })            
             })
@@ -216,6 +214,18 @@ const app = Vue.createApp({
         .then((returned) => {
           this.description_levels.level_2 = returned.data;
         });
+      fetch("/data/config/accounts", {method:'GET'})
+        .then((response) => response.json())
+        .then((returned) => {
+          this.account_names = returned.data;
+        });
+      fetch("/data/config/movement_types", {method:'GET'})
+        .then((response) => response.json())
+        .then((returned) => {
+          this.movement_types = returned.data;
+        });
+
+      // console.log(movement_types)
       this.update_current_transaction();
       
     },
@@ -232,3 +242,9 @@ console.log(app); // Print a data property from vue instance
 console.log(app.result_1, app.result_2, app.result_3); // Print multiple data properties from vue instance
 
 console.log('starting mounted')
+
+
+
+function clean_price(price) {
+  return parseFloat(price.replace(/[^0-9.]+/g,""));
+}

@@ -1,8 +1,8 @@
 {
-    "F": {
+    "f": {
         "description": "Food",
         "next": {
-            "F": {
+            "f": {
                 "description": "Fast",
                 "next": {
                     "d": {
@@ -63,7 +63,7 @@
                     }
                 }
             },
-            "E": {
+            "e": {
                 "description": "Eating In",
                 "next": {
                     "p": {
@@ -98,20 +98,20 @@
             }
         }
     },
-    "G": {
+    "g": {
         "description": "Groceries",
         "next": {
-            "S": {
+            "s": {
                 "description": "Snacks",
                 "next": {}
             },
-            "G": {
+            "g": {
                 "description": "Acutal Groceries",
                 "next": {}
             }
         }
     },
-    "W": {
+    "w": {
         "description": "Wall",
         "next": {}
     }

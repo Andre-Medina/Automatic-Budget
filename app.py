@@ -6,12 +6,15 @@ main file used to run the server
 
 # Import Flask and other packages
 from flask import Flask, render_template, jsonify, request
+import json
 from markupsafe import Markup
 
 ROOT_DIR = ""
 
 # Import modules from modules subdirectory
 import modules as md
+
+
 
 
 statements = md.statements.Statements()
@@ -61,6 +64,7 @@ def get_data(data_type, extra):
         "Content-Type": "application/json"
         }
     
+    # getting
     if request.method == "GET":
         
         if data_type == "level":
@@ -78,18 +82,23 @@ def get_data(data_type, extra):
             response_object['data'] = statements.get_transaction(extra, transaction)
             status_code = 201
 
+        elif data_type == "config" and extra == "accounts":
+            response_object['data'] = md.ALL_ACCOUNT_LIKE
+            status_code = 200
+            
+        elif data_type == "config" and extra == "movement_types":
+            response_object['data'] = md.MOVEMENT_TYPES
+            status_code = 200
+
+
         else:
             response_object['data'] = "page not found"
             status_code = 400
 
+    # posting
     elif request.method == "POST":
         if data_type == "statement":
-            transaction = request.args.get('transaction', default = 0, type = int)
-            print(request)
-            print(request.data)
-            response_object['data'] = "inserted request"
-            # response_object['data'] = statements.get_transaction(extra, transaction)
-            status_code = 202
+            response_object['data'], status_code = statements.post_transaction(json.loads(request.data.decode()))
         
         else:
             response_object['data'] = "page not found"
