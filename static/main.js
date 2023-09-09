@@ -2,12 +2,24 @@
 This is the JavaScript file that contains the logic for your 
 */
 
+const account_names = {
+  'pink_card': 'bd',
+  'blue_card': 'be',
+  'loan': '2=-l',
+}
+
 
 // Create an app instance
 const app = Vue.createApp({
     // Define the data for your app
     data() {
       return {
+        // accounts
+        account_names: account_names,
+        current_account: null,
+
+
+        // description
         description_levels: {
           level1: null,
           level2: null
@@ -16,9 +28,9 @@ const app = Vue.createApp({
         selected_levels: [null],
         
         // transactions
-        account: 'pink_card',
         transaction_index: 0,
         current_transaction: null,
+        short_description: '',
       };
     },
     computed: {
@@ -61,6 +73,8 @@ const app = Vue.createApp({
 
     },
     methods: {
+
+
       printValue(value){
         console.log(value);
         this.result_1 = value;
@@ -155,14 +169,38 @@ const app = Vue.createApp({
       },
       // calculates current transaction
       update_current_transaction(){
-        fetch("/data/statement/" + this.account + '?transaction=' + this.transaction_index, {method:'GET'})
+        if(this.current_account){
+          fetch("/data/statement/" + this.current_account + '?transaction=' + this.transaction_index, {method:'GET'})
           .then((response) => response.json())
           .then((returned) => {
             console.log('data: for index ' + this.transaction_index);
             console.log(returned);
             this.current_transaction = returned.data
           });
+        }
       },
+
+      submit_transaction(){
+        if(this.current_account){
+          fetch(
+            "/data/statement/" + this.current_account + '?transaction=' + this.transaction_index, 
+            {
+              method:'POST',
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ 
+                amount: this.current_transaction.amount, 
+                where: this.current_account, 
+                code: this.calculate_initial_code,
+                desc: this.short_description,
+                date: this.current_transaction.date              
+              })            
+            })
+            .then((response) => response.json())
+            .then((returned) => {
+              console.log(returned);
+            });
+        }
+      }
     },
     mounted() {
       fetch("/data/level/1", {method:'GET'})

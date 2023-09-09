@@ -37,6 +37,19 @@ Vue.js Landing Page
             <div align='center'>   
                 <h1>Please enter a message and parameters</h1>
                 <form id="myform" method="POST" action="">
+                    <div class="row">
+                        <div class="4u">
+                            <div class="select-wrapper">
+                                <select v-model="current_account" @change="current_account = $event.target.value">
+                                    <option>-</option>
+                                    <option v-for="account in Object.keys(account_names)" :value="account" :key="account">[[ account_names[account] ]] - [[account]]</option>
+                                </select>
+                            </div>
+                        </div> 
+                        <div class="4u">
+
+                        </div> 
+                    </div>  
                     <br>
                     <div class="row">
                         <div class="4u">
@@ -49,7 +62,6 @@ Vue.js Landing Page
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>a</th>
                                         <th>Date</th>
                                         <th>Description</th>
                                         <th>Amount</th>
@@ -67,7 +79,7 @@ Vue.js Landing Page
                     </div>
                     <div>
                         <span style="font-size: 2em;">Text:</span>      
-                        <input id="textToPrint" style="width: 30%;" type="text" name="user" placeholder="Text">
+                        <input style="width: 30%;" type="text" name="user" placeholder="short description" v-model="short_description">
                     </div>
                     <br/>
                     <div>
@@ -93,12 +105,12 @@ Vue.js Landing Page
                     </div>
                     <div>
                         
-                        <p>Code: [[calculate_initial_code]]<p>
+                        <p>Code: [[calculate_initial_code]]   desc: [[short_description]]<p>
                         <!-- <p>Age: [[data.age ]]</p> -->
                     </div>
                     <br/>
                     <div>
-                        <input class="button fit" name="submit" value="Submit" @click.prevent="next_transaction()">
+                        <input class="button fit" name="Submit" @click.prevent="submit_transaction()">
                     </div>
                     <div>
                         [[current_transaction]]

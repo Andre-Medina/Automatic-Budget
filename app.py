@@ -55,30 +55,51 @@ def test():
         'test.html'
     )
 
-@app.route("/data/<data_type>/<extra>", methods=['GET'])
+@app.route("/data/<data_type>/<extra>", methods=['GET','POST'])
 def get_data(data_type, extra):
-    response_object = {'status': 'success'}
+    response_object = {
+        "Content-Type": "application/json"
+        }
+    
     if request.method == "GET":
         
         if data_type == "level":
             if extra == "1":
                 response_object['data'] =  md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_1)
+                status_code = 200
 
             elif extra == "2":
                 response_object['data'] = md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_2)
+                status_code = 200
 
         elif data_type == "statement":
             extra
             transaction = request.args.get('transaction', default = 0, type = int)
             response_object['data'] = statements.get_transaction(extra, transaction)
+            status_code = 201
 
         else:
             response_object['data'] = "page not found"
+            status_code = 400
 
+    elif request.method == "POST":
+        if data_type == "statement":
+            transaction = request.args.get('transaction', default = 0, type = int)
+            print(request)
+            print(request.data)
+            response_object['data'] = "inserted request"
+            # response_object['data'] = statements.get_transaction(extra, transaction)
+            status_code = 202
+        
+        else:
+            response_object['data'] = "page not found"
+            status_code = 404
+        
     else:
         response_object['data'] = "please use get"
+        status_code = 400
     
-    return jsonify(response_object)
+    return jsonify(response_object), status_code
 
 
 
