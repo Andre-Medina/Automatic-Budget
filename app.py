@@ -22,6 +22,12 @@ statements = md.statements.Statements()
 # Create an instance of Flask class
 app = Flask(__name__)
 
+#  ██ ███    ██ ██████  ███████ ██   ██ 
+#  ██ ████   ██ ██   ██ ██       ██ ██  
+#  ██ ██ ██  ██ ██   ██ █████     ███   
+#  ██ ██  ██ ██ ██   ██ ██       ██ ██  
+#  ██ ██   ████ ██████  ███████ ██   ██ 
+#  
 # Define routes and functions for your app
 @app.route("/")
 def index():
@@ -58,15 +64,27 @@ def test():
         'test.html'
     )
 
+#  ██████   █████  ████████  █████  
+#  ██   ██ ██   ██    ██    ██   ██ 
+#  ██   ██ ███████    ██    ███████ 
+#  ██   ██ ██   ██    ██    ██   ██ 
+#  ██████  ██   ██    ██    ██   ██ 
+#  
 @app.route("/data/<data_type>/<extra>", methods=['GET','POST'])
 def get_data(data_type, extra):
     response_object = {
         "Content-Type": "application/json"
         }
     
-    # getting
+
+    #  █▀▀ █▀▀ ▀█▀ 
+    #  █▄█ ██▄  █  
+    #  
     if request.method == "GET":
-        
+
+        #  █   █▀▀ █ █ █▀▀ █   
+        #  █▄▄ ██▄ ▀▄▀ ██▄ █▄▄ 
+        #  
         if data_type == "level":
             if extra == "1":
                 response_object['data'] =  md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_1)
@@ -76,12 +94,21 @@ def get_data(data_type, extra):
                 response_object['data'] = md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_2)
                 status_code = 200
 
+
+        #  █▀ ▀█▀ ▄▀█ ▀█▀ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀ 
+        #  ▄█  █  █▀█  █  ██▄ █ ▀ █ ██▄ █ ▀█  █  
+        #  
         elif data_type == "statement":
             extra
             transaction = request.args.get('transaction', default = 0, type = int)
             response_object['data'] = statements.get_transaction(extra, transaction)
             status_code = 201
 
+
+
+        #  █▀▀ █▀█ █▄ █ █▀▀ █ █▀▀ 
+        #  █▄▄ █▄█ █ ▀█ █▀  █ █▄█ 
+        #  
         elif data_type == "config" and extra == "accounts":
             response_object['data'] = md.ALL_ACCOUNT_LIKE
             status_code = 200
@@ -95,7 +122,10 @@ def get_data(data_type, extra):
             response_object['data'] = "page not found"
             status_code = 400
 
-    # posting
+
+    #  █▀█ █▀█ █▀ ▀█▀ 
+    #  █▀▀ █▄█ ▄█  █  
+    #  
     elif request.method == "POST":
         if data_type == "statement":
             response_object['data'], status_code = statements.post_transaction(json.loads(request.data.decode()))
@@ -114,6 +144,12 @@ def get_data(data_type, extra):
 
 
 
+#  ███████ ████████  █████  ██████  ████████ 
+#  ██         ██    ██   ██ ██   ██    ██    
+#  ███████    ██    ███████ ██████     ██    
+#       ██    ██    ██   ██ ██   ██    ██    
+#  ███████    ██    ██   ██ ██   ██    ██    
+#  
 # Run the app if this file is executed as the main script
 if __name__ == "__main__":
     print('starting')

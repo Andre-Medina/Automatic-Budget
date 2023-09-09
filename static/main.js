@@ -6,7 +6,14 @@ This is the JavaScript file that contains the logic for your
 
 // Create an app instance
 const app = Vue.createApp({
-    // Define the data for your app
+
+    //  ██████╗   █████╗  ████████╗  █████╗  
+    //  ██╔══██╗ ██╔══██╗ ╚══██╔══╝ ██╔══██╗ 
+    //  ██║  ██║ ███████║    ██║    ███████║ 
+    //  ██║  ██║ ██╔══██║    ██║    ██╔══██║ 
+    //  ██████╔╝ ██║  ██║    ██║    ██║  ██║ 
+    //  ╚═════╝  ╚═╝  ╚═╝    ╚═╝    ╚═╝  ╚═╝ 
+    //  
     data() {
       return {
         // accounts
@@ -23,12 +30,27 @@ const app = Vue.createApp({
         selected_code: [null],
         selected_levels: [null],
         
+        // tags
+        description_tag: {tag: null, name: null},
+
         // transactions
         transaction_index: 0,
         current_transaction: null,
         short_description: '',
+
+        // are you sure
+        are_you_sure_flag: null,
       };
     },
+
+    
+    //   ██████╗  ██████╗  ███╗   ███╗ ██████╗  ██╗   ██╗ ████████╗ ███████╗ ██████╗  
+    //  ██╔════╝ ██╔═══██╗ ████╗ ████║ ██╔══██╗ ██║   ██║ ╚══██╔══╝ ██╔════╝ ██╔══██╗ 
+    //  ██║      ██║   ██║ ██╔████╔██║ ██████╔╝ ██║   ██║    ██║    █████╗   ██║  ██║ 
+    //  ██║      ██║   ██║ ██║╚██╔╝██║ ██╔═══╝  ██║   ██║    ██║    ██╔══╝   ██║  ██║ 
+    //  ╚██████╗ ╚██████╔╝ ██║ ╚═╝ ██║ ██║      ╚██████╔╝    ██║    ███████╗ ██████╔╝ 
+    //   ╚═════╝  ╚═════╝  ╚═╝     ╚═╝ ╚═╝       ╚═════╝     ╚═╝    ╚══════╝ ╚═════╝  
+    //  
     computed: {
 
       // calculates depth
@@ -66,16 +88,70 @@ const app = Vue.createApp({
         return code
       },
 
+      //  █ █ █▀█ █▀▄ ▄▀█ ▀█▀ █▀▀    █▀▀ █ █ █▀█ █▀█ █▀▀ █▄ █ ▀█▀    ▀█▀ █▀█ ▄▀█ █▄ █ █▀ ▄▀█ █▀▀ ▀█▀ █ █▀█ █▄ █ 
+      //  █▄█ █▀▀ █▄▀ █▀█  █  ██▄ ▄▄ █▄▄ █▄█ █▀▄ █▀▄ ██▄ █ ▀█  █  ▄▄  █  █▀▄ █▀█ █ ▀█ ▄█ █▀█ █▄▄  █  █ █▄█ █ ▀█ 
+      //  
+      // calculates current transaction
+      async get_current_transaction(){
+        //update are you sure
+        if(this.current_account){
+          try{
+            const response = await fetch("/data/statement/" + this.current_account + '?transaction=' + this.transaction_index, {method:'GET'})
+            const returned = await response.json()  
+            console.log('new update transaction')
+            this.current_transaction = returned.data.transaction
+            this.deal_with_prediction(returned.data.prediction)
+            return returned.data
+          }catch(error){
+            throw error
+          }
+        }else{
+          return null
+        }
+      },
+
 
     },
+
+    
+    //  ███╗   ███╗ ███████╗ ████████╗ ██╗  ██╗  ██████╗  ██████╗  ███████╗ 
+    //  ████╗ ████║ ██╔════╝ ╚══██╔══╝ ██║  ██║ ██╔═══██╗ ██╔══██╗ ██╔════╝ 
+    //  ██╔████╔██║ █████╗      ██║    ███████║ ██║   ██║ ██║  ██║ ███████╗ 
+    //  ██║╚██╔╝██║ ██╔══╝      ██║    ██╔══██║ ██║   ██║ ██║  ██║ ╚════██║ 
+    //  ██║ ╚═╝ ██║ ███████╗    ██║    ██║  ██║ ╚██████╔╝ ██████╔╝ ███████║ 
+    //  ╚═╝     ╚═╝ ╚══════╝    ╚═╝    ╚═╝  ╚═╝  ╚═════╝  ╚═════╝  ╚══════╝ 
+    //  
     methods: {
 
 
+      //  ▄▀▀▀▀ █▀▀▀ █▄    █ █▀▀▀ █▀▀▀▄ ▄▀▀▀▄ █    
+      //  █  ▄▄ █▄▄  █ ▀▄  █ █▄▄  █▄▄▄▀ █▄▄▄█ █    
+      //  █   █ █    █   ▀▄█ █    █  ▀█ █   █ █    
+      //   ▀▀▀▀ ▀▀▀▀ ▀     ▀ ▀▀▀▀ ▀   ▀ ▀   ▀ ▀▀▀▀ 
+      //  
+      //  █▀█ █▀█ █ █▄ █ ▀█▀ █ █ ▄▀█ █   █ █ █▀▀ 
+      //  █▀▀ █▀▄ █ █ ▀█  █  ▀▄▀ █▀█ █▄▄ █▄█ ██▄ 
+      //  
       printValue(value){
         console.log(value);
         this.result_1 = value;
       },
+
       
+      update_are_you_sure(){
+        console.log(this.are_you_sure_flag)
+        this.are_you_sure_flag = false
+        return this.are_you_sure_flag
+      },
+      
+      //  █▀▀▀▄ █▀▀▀ ▄▀▀▀▀ ▄▀▀▀ █▀▀▀▄ ▀▀█▀▀ █▀▀▄ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
+      //  █   █ █▄▄  ▀▄▄▄  █    █▄▄▄▀   █   █▄▄▀   █     █   █    █ █ ▀▄  █ 
+      //  █   █ █        █ █    █  ▀█   █   █      █     █   █    █ █   ▀▄█ 
+      //  ▀▀▀▀  ▀▀▀▀ ▀▀▀▀   ▀▀▀ ▀   ▀ ▀▀▀▀▀ ▀      ▀   ▀▀▀▀▀  ▀▀▀▀  ▀     ▀ 
+      //  
+      //  █▀ █▀▀ ▀█▀    █▀▄ █▀▀ █▀ █▀▀ █▀█ █ █▀█ ▀█▀ █ █▀█ █▄ █ 
+      //  ▄█ ██▄  █  ▄▄ █▄▀ ██▄ ▄█ █▄▄ █▀▄ █ █▀▀  █  █ █▄█ █ ▀█ 
+      //  
       // sets the desction to selected code
       set_description(code, level){
         console.log('setting ' + level + " to a code of " + code);
@@ -101,14 +177,15 @@ const app = Vue.createApp({
 
       },
 
+      //  █▀▀ ▄▀█ █   █▀▀ █ █ █   ▄▀█ ▀█▀ █▀▀    █▀ █▀▀ █   █▀▀ █▀▀ ▀█▀ █▀▀ █▀▄    █   █▀▀ █ █ █▀▀ █   
+      //  █▄▄ █▀█ █▄▄ █▄▄ █▄█ █▄▄ █▀█  █  ██▄ ▄▄ ▄█ ██▄ █▄▄ ██▄ █▄▄  █  ██▄ █▄▀ ▄▄ █▄▄ ██▄ ▀▄▀ ██▄ █▄▄ 
+      //  
       // returns the list for the correct level
       calculate_selected_level(calc_level){
-    
         //console.log('WORKING OUT LEVEL: ' + calc_level)
 
         // copys the description levels
         let selected = JSON.parse(JSON.stringify(this.description_levels.level_2));
-
 
         for(let [level, code] of this.selected_code.entries()){
           
@@ -143,40 +220,71 @@ const app = Vue.createApp({
         return selected
       },
 
+      //  █▀█ █▀▀ █▀ █▀▀ ▀█▀    █▀▀ █▀█ █▀▄ █▀▀ 
+      //  █▀▄ ██▄ ▄█ ██▄  █  ▄▄ █▄▄ █▄█ █▄▀ ██▄ 
+      //  
       // resets code
       reset_code(){
         this.selected_code = [null]
         this.selected_levels = [this.description_levels.level_1]
       },
 
-      // statements
-
-      prev_transaction(){
-        if(this.transaction_index <= 0){
+      //  ▀▀█▀▀ █▀▀▀▄ ▄▀▀▀▄ █▄    █ ▄▀▀▀▀ ▄▀▀▀▄ ▄▀▀▀ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
+      //    █   █▄▄▄▀ █▄▄▄█ █ ▀▄  █ ▀▄▄▄  █▄▄▄█ █      █     █   █    █ █ ▀▄  █ 
+      //    █   █  ▀█ █   █ █   ▀▄█     █ █   █ █      █     █   █    █ █   ▀▄█ 
+      //    ▀   ▀   ▀ ▀   ▀ ▀     ▀ ▀▀▀▀  ▀   ▀  ▀▀▀   ▀   ▀▀▀▀▀  ▀▀▀▀  ▀     ▀ 
+      //  
+      //  █▀█ █▀█ █▀▀ █ █    ▀█▀ █▀█ ▄▀█ █▄ █ █▀ ▄▀█ █▀▀ ▀█▀ █ █▀█ █▄ █ 
+      //  █▀▀ █▀▄ ██▄ ▀▄▀ ▄▄  █  █▀▄ █▀█ █ ▀█ ▄█ █▀█ █▄▄  █  █ █▄█ █ ▀█ 
+      //  
+      prev_transaction(distance){
+        if(this.transaction_index - distance < 0){
           console.log('far enough')
           return
         }
-        this.transaction_index --
-        this.update_current_transaction()
-      },
-      next_transaction(){
-        this.transaction_index ++
-        this.update_current_transaction()
-      },
-      // calculates current transaction
-      update_current_transaction(){
-        if(this.current_account){
-          fetch("/data/statement/" + this.current_account + '?transaction=' + this.transaction_index, {method:'GET'})
-          .then((response) => response.json())
-          .then((returned) => {
-            console.log('data: for index ' + this.transaction_index);
-            console.log(returned);
-            this.current_transaction = returned.data
-          });
-        }
+        this.transaction_index -= distance
       },
 
-      submit_transaction(){
+      
+      //  █▄ █ █▀▀ ▀▄▀ ▀█▀    ▀█▀ █▀█ ▄▀█ █▄ █ █▀ ▄▀█ █▀▀ ▀█▀ █ █▀█ █▄ █ 
+      //  █ ▀█ ██▄ █ █  █  ▄▄  █  █▀▄ █▀█ █ ▀█ ▄█ █▀█ █▄▄  █  █ █▄█ █ ▀█ 
+      //  
+      next_transaction(distance){
+        this.transaction_index += distance
+      },
+
+      deal_with_prediction(prediction){
+        if(prediction == null){
+          return
+        }else{
+          //           description_tag
+          // selected_levels
+          // short_description
+          // current_movement_type
+
+
+        }
+
+
+      },
+      //  █▀ █ █ █▄▄ █▀▄▀█ █ ▀█▀    ▀█▀ █▀█ ▄▀█ █▄ █ █▀ ▄▀█ █▀▀ ▀█▀ █ █▀█ █▄ █ 
+      //  ▄█ █▄█ █▄█ █ ▀ █ █  █  ▄▄  █  █▀▄ █▀█ █ ▀█ ▄█ █▀█ █▄▄  █  █ █▄█ █ ▀█ 
+      //  
+      submit_transaction(are_you_sure = false){
+        
+        if(!are_you_sure){
+          if(
+            this.current_transaction == null | 
+            this.movement_types == null | 
+            this.selected_code[0] == null 
+            ){
+              this.are_you_sure_flag = true
+              return
+          }
+        }
+        this.are_you_sure_flag = null
+
+
         if(this.current_account){
           fetch(
             "/data/statement/" + this.current_account + '?transaction=' + this.transaction_index, 
@@ -200,7 +308,17 @@ const app = Vue.createApp({
         }
       }
     },
+    
+    //  ███    ███  ██████  ██    ██ ███    ██ ████████ ███████ ██████  
+    //  ████  ████ ██    ██ ██    ██ ████   ██    ██    ██      ██   ██ 
+    //  ██ ████ ██ ██    ██ ██    ██ ██ ██  ██    ██    █████   ██   ██ 
+    //  ██  ██  ██ ██    ██ ██    ██ ██  ██ ██    ██    ██      ██   ██ 
+    //  ██      ██  ██████   ██████  ██   ████    ██    ███████ ██████  
+    //  
     mounted() {
+      //  █   █▀▀ █ █ █▀▀ █   █▀ 
+      //  █▄▄ ██▄ ▀▄▀ ██▄ █▄▄ ▄█ 
+      //  
       fetch("/data/level/1", {method:'GET'})
         .then((response) => response.json())
         .then((returned) => {
@@ -209,29 +327,50 @@ const app = Vue.createApp({
           this.description_levels.level_1 = returned.data;
           this.selected_levels[0] = this.description_levels.level_1;
         });
+
       fetch("/data/level/2", {method:'GET'})
         .then((response) => response.json())
         .then((returned) => {
           this.description_levels.level_2 = returned.data;
         });
+
+      //  █▀ ▀█▀ ▄▀█ ▀█▀ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀   ▄▀█ █▀▀ █▀▀ █▀█ █ █ █▄ █ ▀█▀ █▀ 
+      //  ▄█  █  █▀█  █  ██▄ █ ▀ █ ██▄ █ ▀█  █    █▀█ █▄▄ █▄▄ █▄█ █▄█ █ ▀█  █  ▄█ 
+      //  
       fetch("/data/config/accounts", {method:'GET'})
         .then((response) => response.json())
         .then((returned) => {
           this.account_names = returned.data;
         });
+
+        
+      //  █▀▄▀█ █▀█ █ █ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀    ▀█▀ █▄█ █▀█ █▀▀ █▀ 
+      //  █ ▀ █ █▄█ ▀▄▀ ██▄ █ ▀ █ ██▄ █ ▀█  █  ▄▄  █   █  █▀▀ ██▄ ▄█ 
+      //  
       fetch("/data/config/movement_types", {method:'GET'})
         .then((response) => response.json())
         .then((returned) => {
           this.movement_types = returned.data;
         });
 
+      //  █▀█ ▀█▀ █ █ █▀▀ █▀█ 
+      //  █▄█  █  █▀█ ██▄ █▀▄ 
+      //  
       // console.log(movement_types)
-      this.update_current_transaction();
       
     },
     
 
   });
+
+
+//  ███████╗ ██╗  ██╗ ████████╗ 
+//  ██╔════╝ ╚██╗██╔╝ ╚══██╔══╝ 
+//  █████╗    ╚███╔╝     ██║    
+//  ██╔══╝    ██╔██╗     ██║    
+//  ███████╗ ██╔╝ ██╗    ██║    
+//  ╚══════╝ ╚═╝  ╚═╝    ╚═╝    
+//  
   // Mount it to an element with id="app"
 app.config.compilerOptions.delimiters = ['[[', ']]'];
 app.mount('#app');

@@ -34,7 +34,7 @@ class Statements:
     
 
     # gets a transaction
-    def get_transaction(self, account, transaction):
+    def get_transaction(self, account, transaction_number):
         
         if account not in self.accounts:
             return "sorry, could not find this account"
@@ -46,11 +46,43 @@ class Statements:
                 traceback.print_exc()
                 return "sorry, error loading statement", 400
             
-        if transaction > self.statments[account].shape[0]:
+        if transaction_number > self.statments[account].shape[0]:
             return "no more transactions!", 204
         
-        return self.statments[account].iloc[transaction].to_dict()
+        transaction = self.statments[account].iloc[transaction_number].to_dict()
+        prediction = self.predict_transaction(transaction)
+        
+        return {'transaction': transaction, 'prediction': prediction}
     
+
+    def predict_transaction(self, transaction):
+        try:
+            history = pd.read_csv(ROOT_DIR + HISTORIC_CLASSIFICATIONS,header=0)\
+            
+            selected_history = history[history['description_full'] == transaction['description']]
+
+            code = selected_history['code'].mode()[0]
+            current_movement_type = selected_history['movement'].mode()[0]
+            short_description = selected_history['description_short'].mode()[0]
+
+            code_half = code.split('=')[1].split('-')
+            selected_levels = [code[0]] + [*(code_half[0])]
+
+
+            description_tag = {'tag': code_half[1][0],'name': code_half[1][1:]} if len(code_half) > 1 else {'tag':None,'name': None}
+
+            prediction = {
+                'description_tag':description_tag,
+                'selected_levels':selected_levels,
+                'short_description':short_description,
+                'current_movement_type':current_movement_type
+            }
+            
+            return prediction
+        except Exception as e:
+            return None
+        
+
 
     # 
     def post_transaction(self, data):

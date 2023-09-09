@@ -50,5 +50,6 @@ SAVED_CLASSIFICATION_COLUMNS_NEEDED = ['movement','date','where','description_fu
 SAVED_CLASSIFICATION_COLUMNS = ['movement','date','where','description_full','code','description_short']
 
 
+
 # PINK_CARD_STATEMENT = BANK_STATEMENTS_DIR + 'pink_card.csv'
 # BLUE_CARD_STATEMENT = BANK_STATEMENTS_DIR + 'blue_card.csv'

@@ -37,10 +37,16 @@ Vue.js Landing Page
             <div align='center'>   
                 <h1>Please enter a message and parameters</h1>
                 <form id="myform" method="POST" action="">
+                    <!---
+                    ▄▀▀▀▄ ▄▀▀▀ ▄▀▀▀ ▄▀▀▀▀▄ █   █ █▄    █ ▀▀█▀▀    ▄▀▀▀▀ █▀▀▀ █    █▀▀▀ ▄▀▀▀ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
+                    █▄▄▄█ █    █    █    █ █   █ █ ▀▄  █   █      ▀▄▄▄  █▄▄  █    █▄▄  █      █     █   █    █ █ ▀▄  █ 
+                    █   █ █    █    █    █ █   █ █   ▀▄█   █          █ █    █    █    █      █     █   █    █ █   ▀▄█ 
+                    ▀   ▀  ▀▀▀  ▀▀▀  ▀▀▀▀   ▀▀▀  ▀     ▀   ▀      ▀▀▀▀  ▀▀▀▀ ▀▀▀▀ ▀▀▀▀  ▀▀▀   ▀   ▀▀▀▀▀  ▀▀▀▀  ▀     ▀ 
+                    --->
                     <div class="row">
                         <div class="4u">
                             <div v-if="account_names" class="select-wrapper">
-                                <select v-model="current_account" @change="current_account = $event.target.value; update_current_transaction()">
+                                <select v-model="current_account" @change="current_account = $event.target.value;">
                                     <option>-</option>
                                     <option v-for="account in Object.keys(account_names)" :value="account" :key="account">[[ account_names[account] ]] - [[account]]</option>
                                 </select>
@@ -51,24 +57,34 @@ Vue.js Landing Page
                         </div> 
                     </div>
                     <br>
+                    <!---
+                    ▀▀█▀▀ █▀▀▀▄ ▄▀▀▀▄ █▄    █ ▄▀▀▀▀ ▄▀▀▀▄ ▄▀▀▀ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █    ▄▀▀▀▀ █▀▀▀ █    █▀▀▀ ▄▀▀▀ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
+                      █   █▄▄▄▀ █▄▄▄█ █ ▀▄  █ ▀▄▄▄  █▄▄▄█ █      █     █   █    █ █ ▀▄  █    ▀▄▄▄  █▄▄  █    █▄▄  █      █     █   █    █ █ ▀▄  █ 
+                      █   █  ▀█ █   █ █   ▀▄█     █ █   █ █      █     █   █    █ █   ▀▄█        █ █    █    █    █      █     █   █    █ █   ▀▄█ 
+                      ▀   ▀   ▀ ▀   ▀ ▀     ▀ ▀▀▀▀  ▀   ▀  ▀▀▀   ▀   ▀▀▀▀▀  ▀▀▀▀  ▀     ▀    ▀▀▀▀  ▀▀▀▀ ▀▀▀▀ ▀▀▀▀  ▀▀▀   ▀   ▀▀▀▀▀  ▀▀▀▀  ▀     ▀ 
+                    --->
                     <div class="row">
                         <div class="4u">
                             <ul class="actions">
-                                <li><a @click.prevent="prev_transaction()" class="button">Back</a></li>
-                                <li><a @click.prevent="next_transaction()" class="button">Next</a></li>
+                                <li><a @click.prevent="prev_transaction(1)" @click.ctrl.prevent="prev_transaction(10)" @click.alt.prevent="prev_transaction(50)" class="button">Back</a></li>
+                                <li><a @click.prevent="next_transaction(1)" @click.ctrl.prevent="next_transaction(10)" @click.alt.prevent="next_transaction(50)" class="button">Next</a></li>
                             </ul>
                         </div> 
                         <div class="8u table-wrapper">			
                             <table>
                                 <thead>
                                     <tr>
+                                        <th>no.</th>
                                         <th>Date</th>
                                         <th>Description</th>
                                         <th>Amount</th>
                                     </tr>
                                 </thead>
+                                <!-- code to update current_transaction -->
+                                <div v-show="false">[[get_current_transaction]]</div>
                                 <tbody>
                                     <tr v-if="current_transaction">
+                                        <td>[[transaction_index + 1]]</td>
                                         <td>[[current_transaction.date]]</td>
                                         <td>[[current_transaction.description]]</td>
                                         <td>[[current_transaction.amount]]</td>
@@ -78,18 +94,35 @@ Vue.js Landing Page
                         </div>
                     </div> 
                     <br> 
+                    <!---
+                    █▄   ▄█ ▄▀▀▀▀▄ █   █ █▀▀▀ █▄   ▄█ █▀▀▀ █▄    █ ▀▀█▀▀    ▄▀▀▀▀ █▀▀▀ █    █▀▀▀ ▄▀▀▀ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
+                    █ ▀▄▀ █ █    █ ▀▄ ▄▀ █▄▄  █ ▀▄▀ █ █▄▄  █ ▀▄  █   █      ▀▄▄▄  █▄▄  █    █▄▄  █      █     █   █    █ █ ▀▄  █ 
+                    █     █ █    █  █ █  █    █     █ █    █   ▀▄█   █          █ █    █    █    █      █     █   █    █ █   ▀▄█ 
+                    ▀     ▀  ▀▀▀▀    ▀   ▀▀▀▀ ▀     ▀ ▀▀▀▀ ▀     ▀   ▀      ▀▀▀▀  ▀▀▀▀ ▀▀▀▀ ▀▀▀▀  ▀▀▀   ▀   ▀▀▀▀▀  ▀▀▀▀  ▀     ▀ 
+                    --->
                     <div>
                         <ul v-if="movement_types" class="actions fit">
                             <li v-for="movement_type in movement_types"><a class="button fit" :class="[current_movement_type == movement_type ? 'special' : '']"  @click="current_movement_type = movement_type">[[movement_type]]</a></li>
                             <!--  -->
                         </ul>
                     </div>
-                    <br>
-                    <div>
-                        <span style="font-size: 2em;">Text:</span>      
-                        <input style="width: 30%;" type="text" name="user" placeholder="short description" v-model="short_description">
+                    <br>                    <!---
+                        █▀▀▀▄ █▀▀▀ ▄▀▀▀▀ ▄▀▀▀ █▀▀▀▄ ▀▀█▀▀ █▀▀▄ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
+                        █   █ █▄▄  ▀▄▄▄  █    █▄▄▄▀   █   █▄▄▀   █     █   █    █ █ ▀▄  █ 
+                        █   █ █        █ █    █  ▀█   █   █      █     █   █    █ █   ▀▄█ 
+                        ▀▀▀▀  ▀▀▀▀ ▀▀▀▀   ▀▀▀ ▀   ▀ ▀▀▀▀▀ ▀      ▀   ▀▀▀▀▀  ▀▀▀▀  ▀     ▀ 
+                        --->
+                    <div class = "row">
+                        <div class = "-3u 3u"><span style="font-size: 2em;">Description:</span></div>
+                        <div class = "3u" ><input type="text" name="user" placeholder="short description" v-model="short_description"></div>
                     </div>
                     <br/>
+                    <!---
+                    ▄▀▀▀ ▄▀▀▀▀▄ █▀▀▀▄ █▀▀▀ 
+                    █    █    █ █   █ █▄▄  
+                    █    █    █ █   █ █    
+                     ▀▀▀  ▀▀▀▀  ▀▀▀▀  ▀▀▀▀ 
+                    --->
                     <div>
                         <ul class="actions fit">
                             <li><a class="button fit" @click="reset_code()">clear code</a></li>
@@ -111,6 +144,12 @@ Vue.js Landing Page
                             </li>
                         </ul>
                     </div>
+                    <!---
+                    █▀▀▄ █▀▀▀▄ ▀▀█▀▀ █▄    █ ▀▀█▀▀ ▀▀█▀▀ █▄    █ ▄▀▀▀▀    ▄▀▀▀▀▄ █   █ ▀▀█▀▀ █▀▀▄ █   █ ▀▀█▀▀ 
+                    █▄▄▀ █▄▄▄▀   █   █ ▀▄  █   █     █   █ ▀▄  █ █  ▄▄    █    █ █   █   █   █▄▄▀ █   █   █   
+                    █    █  ▀█   █   █   ▀▄█   █     █   █   ▀▄█ █   █    █    █ █   █   █   █    █   █   █   
+                    ▀    ▀   ▀ ▀▀▀▀▀ ▀     ▀   ▀   ▀▀▀▀▀ ▀     ▀  ▀▀▀▀     ▀▀▀▀   ▀▀▀    ▀   ▀     ▀▀▀    ▀   
+                    --->
                     <div class="center">			
                         <table>
                             <thead>
@@ -124,6 +163,7 @@ Vue.js Landing Page
                                 </tr>
                             </thead>
                             <tbody>
+                                <span v-show="false" ></span>
                                 <tr v-if="current_transaction">
                                     <td>[[current_movement_type]]</td>
                                     <td>[[current_transaction.amount]]</td>
@@ -138,11 +178,19 @@ Vue.js Landing Page
                         <!-- <p>Age: [[data.age ]]</p> -->
                     </div>
                     <br/>
-                    <div class="center">
-                        <a class="button fit" name="Submit" @click.prevent="submit_transaction()">commit</a>
-                    </div>
-                    <div>
-                        [[current_transaction]]
+                    <!---
+                    ▄▀▀▀▀ █   █ █▀▀▀▄ █▄   ▄█ ▀▀█▀▀ ▀▀█▀▀ 
+                    ▀▄▄▄  █   █ █▄▄▄▀ █ ▀▄▀ █   █     █   
+                        █ █   █ █   █ █     █   █     █   
+                    ▀▀▀▀   ▀▀▀  ▀▀▀▀  ▀     ▀ ▀▀▀▀▀   ▀   
+                    --->
+                    <div class="row">
+                        <div class="6u 12u(2)">
+                            <a class="button fit" name="Submit" @click.prevent="submit_transaction()">commit</a>
+                        </div>
+                        <div v-if="are_you_sure_flag" class="3u right">Are you sure?</div>
+                        <div v-if="are_you_sure_flag" class="3u"><a class="button fit" name="Submit" @click.prevent="submit_transaction(true)">yes</a></div>
+                        
                     </div>
                 </form>  
             </div>
