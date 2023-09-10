@@ -36,8 +36,13 @@ STATEMENT_ACCOUNTS = {
     'blue_card': 'be',
   }
 ALL_ACCOUNT_LIKE = STATEMENT_ACCOUNTS | {
-    'loan': '2=-l'
-} 
+    'loan': '2=-l',
+}
+
+
+
+    # 'work': 'w',
+    # 'talley': 't',
 
 
 

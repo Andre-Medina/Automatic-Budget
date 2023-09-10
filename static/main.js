@@ -168,13 +168,19 @@ const app = Vue.createApp({
         console.log('selected code is \\\|/')
         console.log(this.selected_code)
 
-        for(let recalc_level = level + 1; recalc_level < this.selected_code.length; recalc_level ++){
-          // console.log('calculating levels for ' + recalc_level)
-          this.selected_levels[recalc_level] = this.calculate_selected_level(recalc_level)
-        }
+        this.calculate_selected_levels_all(level)
+
         console.log('selected levels is \\\|/')
         console.log(this.selected_levels)
 
+      },
+
+      calculate_selected_levels_all(min_level = 1){
+
+        for(let recalc_level = min_level + 1; recalc_level < this.selected_code.length; recalc_level ++){
+          // console.log('calculating levels for ' + recalc_level)
+          this.selected_levels[recalc_level] = this.calculate_selected_level(recalc_level)
+        }
       },
 
       //  █▀▀ ▄▀█ █   █▀▀ █ █ █   ▄▀█ ▀█▀ █▀▀    █▀ █▀▀ █   █▀▀ █▀▀ ▀█▀ █▀▀ █▀▄    █   █▀▀ █ █ █▀▀ █   
@@ -257,11 +263,21 @@ const app = Vue.createApp({
         if(prediction == null){
           return
         }else{
-          //           description_tag
+          console.log("prediction: ")
+          // not dealing with tags atm
+          // console.log(prediction.description_tag)
+
+          console.log(prediction.selected_levels)
+          console.log(this.selected_levels)
+          this.selected_levels = prediction.selected_levels
+          console.log(this.selected_levels)
+
+          console.log(prediction.short_description)
+          console.log(prediction.current_movement_type)
           // selected_levels
           // short_description
           // current_movement_type
-
+          this.calculate_selected_levels_all()
 
         }
 

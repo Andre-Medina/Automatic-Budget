@@ -108,11 +108,502 @@
             "g": {
                 "description": "Acutal Groceries",
                 "next": {}
+            },
+            "d": {
+                "description": "Drugs",
+                "next": {
+                    "a": {
+                        "description": "Alchohol",
+                        "next": {}
+                    },
+                    "w": {
+                        "description": "Weed",
+                        "next": {}
+                    },
+                    "o": {
+                        "description": "Other",
+                        "next": {}
+                    }
+                }
+            },
+            "c": {
+                "description": "cleaning stuff",
+                "next": {}
+            },
+            "m": {
+                "description": "makeup",
+                "next": {}
             }
         }
     },
-    "w": {
-        "description": "Wall",
-        "next": {}
+    "o": {
+        "description": "Outings",
+        "next": {
+            "p": {
+                "description": "Performance",
+                "next": {
+                    "b": {
+                        "description": "Bar",
+                        "next": {}
+                    },
+                    "c": {
+                        "description": "Concert",
+                        "next": {}
+                    },
+                    "f": {
+                        "description": "Fesitval",
+                        "next": {}
+                    }
+                }
+            },
+            "m": {
+                "description": "Movie",
+                "next": {}
+            },
+            "n": {
+                "description": "Night out",
+                "next": {
+                    "h": {
+                        "description": "House",
+                        "next": {}
+                    },
+                    "p": {
+                        "description": "Pub",
+                        "next": {}
+                    },
+                    "c": {
+                        "description": "Club",
+                        "next": {}
+                    }
+                }
+            },
+            "x": {
+                "description": "Expo",
+                "next": {}
+            },
+            "f": {
+                "description": "Formal Event",
+                "next": {}
+            },
+            "g": {
+                "description": "Gambling",
+                "next": {}
+            }
+        }
+    },
+    "t": {
+        "description": "Transport",
+        "next": {
+            "c": {
+                "description": "Car",
+                "next": {
+                    "c": {
+                        "description": "Car",
+                        "next": {}
+                    },
+                    "a": {
+                        "description": "Accessories",
+                        "next": {}
+                    },
+                    "x": {
+                        "description": "Repairs",
+                        "next": {}
+                    },
+                    "f": {
+                        "description": "Fuel",
+                        "next": {}
+                    },
+                    "r": {
+                        "description": "Rego/ Insurance",
+                        "next": {}
+                    },
+                    "p": {
+                        "description": "Parking",
+                        "next": {}
+                    },
+                    "t": {
+                        "description": "Tolls",
+                        "next": {}
+                    }
+                }
+            },
+            "p": {
+                "description": "Public",
+                "next": {}
+            },
+            "b": {
+                "description": "Bike",
+                "next": {}
+            },
+            "t": {
+                "description": "Taxi",
+                "next": {}
+            },
+            "a": {
+                "description": "Areoplane",
+                "next": {}
+            },
+            "o": {
+                "description": "Other",
+                "next": {}
+            }
+        }
+    },
+    "c": {
+        "description": "Clothing",
+        "next": {
+            "c": {
+                "description": "Clothes",
+                "next": {}
+            },
+            "s": {
+                "description": "Shoes",
+                "next": {}
+            },
+            "a": {
+                "description": "Accesories",
+                "next": {}
+            }
+        }
+    },
+    "e": {
+        "description": "Equipment",
+        "next": {
+            "c": {
+                "description": "Camera",
+                "next": {
+                    "c": {
+                        "description": "Camera general",
+                        "next": {}
+                    },
+                    "d": {
+                        "description": "Digital only",
+                        "next": {}
+                    },
+                    "a": {
+                        "description": "Film only",
+                        "next": {}
+                    },
+                    "f": {
+                        "description": "Film itself",
+                        "next": {}
+                    }
+                }
+            },
+            "h": {
+                "description": "Hardware",
+                "next": {}
+            },
+            "e": {
+                "description": "Electronic Components",
+                "next": {}
+            },
+            "v": {
+                "description": "Technology",
+                "next": {}
+            },
+            "t": {
+                "description": "Tools",
+                "next": {}
+            },
+            "s": {
+                "description": "Stationary",
+                "next": {}
+            },
+            "z": {
+                "description": "Software",
+                "next": {}
+            }
+        }
+    },
+    "a": {
+        "description": "Adult Stuff",
+        "next": {
+            "h": {
+                "description": "Healthcare",
+                "next": {}
+            },
+            "t": {
+                "description": "Therapy",
+                "next": {}
+            },
+            "b": {
+                "description": "Books",
+                "next": {}
+            },
+            "e": {
+                "description": "Education",
+                "next": {}
+            },
+            "s": {
+                "description": "Sports",
+                "next": {
+                    "a": {
+                        "description": "Active Wear",
+                        "next": {}
+                    },
+                    "s": {
+                        "description": "Session",
+                        "next": {}
+                    },
+                    "e": {
+                        "description": "Equipment",
+                        "next": {}
+                    }
+                }
+            }
+        }
+    },
+    "d": {
+        "description": "Donation",
+        "next": {
+            "h": {
+                "description": "Homeless",
+                "next": {}
+            },
+            "e": {
+                "description": "Eviroment",
+                "next": {}
+            },
+            "m": {
+                "description": "medical",
+                "next": {}
+            },
+            "c": {
+                "description": "Crisis",
+                "next": {}
+            }
+        }
+    },
+    "m": {
+        "description": "Entertainment",
+        "next": {
+            "o": {
+                "description": "Online",
+                "next": {
+                    "n": {
+                        "description": "Netflix/ Streaming",
+                        "next": {}
+                    },
+                    "y": {
+                        "description": "YouTube",
+                        "next": {}
+                    },
+                    "s": {
+                        "description": "Spotify",
+                        "next": {}
+                    }
+                }
+            },
+            "t": {
+                "description": "Toys",
+                "next": {}
+            },
+            "g": {
+                "description": "Gaming",
+                "next": {
+                    "x": {
+                        "description": "Xbox",
+                        "next": {}
+                    },
+                    "p": {
+                        "description": "PC",
+                        "next": {}
+                    },
+                    "n": {
+                        "description": "Nintendo",
+                        "next": {}
+                    }
+                }
+            }
+        }
+    },
+    "h": {
+        "description": "House",
+        "next": {
+            "a": {
+                "description": "Accomodation",
+                "next": {}
+            },
+            "r": {
+                "description": "Repairs",
+                "next": {}
+            },
+            "f": {
+                "description": "Furniture",
+                "next": {}
+            },
+            "u": {
+                "description": "Utilities",
+                "next": {
+                    "w": {
+                        "description": "Water",
+                        "next": {}
+                    },
+                    "g": {
+                        "description": "Gas",
+                        "next": {}
+                    },
+                    "e": {
+                        "description": "Electricity",
+                        "next": {}
+                    },
+                    "i": {
+                        "description": "Internet",
+                        "next": {}
+                    },
+                    "m": {
+                        "description": "Mobile data",
+                        "next": {}
+                    }
+                }
+            },
+            "d": {
+                "description": "Decorations",
+                "next": {
+                    "a": {
+                        "description": "Art",
+                        "next": {}
+                    },
+                    "p": {
+                        "description": "Printing",
+                        "next": {}
+                    },
+                    "c": {
+                        "description": "Candels and Incense",
+                        "next": {}
+                    }
+                }
+            },
+            "g": {
+                "description": "Garden",
+                "next": {}
+            }
+        }
+    },
+    "x": {
+        "description": "Error/ Adjustment",
+        "next": {
+            "f": {
+                "description": "Fee",
+                "next": {}
+            },
+            "m": {
+                "description": "misplaced",
+                "next": {}
+            },
+            "l": {
+                "description": "found",
+                "next": {}
+            },
+            "i": {
+                "description": "interest",
+                "next": {}
+            },
+            "s": {
+                "description": "Shares",
+                "next": {}
+            }
+        }
+    },
+    "p": {
+        "description": "Present",
+        "next": {
+            "f": {
+                "description": "Family",
+                "next": {
+                    "d": {
+                        "description": "Dads side",
+                        "next": {
+                            "-pexp": {
+                                "description": "Expense",
+                                "next": {}
+                            },
+                            "-pgif": {
+                                "description": "Spending",
+                                "next": {}
+                            },
+                            "-pinc": {
+                                "description": "Mix",
+                                "next": {}
+                            }
+                        }
+                    },
+                    "m": {
+                        "description": "Mums side",
+                        "next": {
+                            "-pexp": {
+                                "description": "Expense",
+                                "next": {}
+                            },
+                            "-pgif": {
+                                "description": "Spending",
+                                "next": {}
+                            },
+                            "-pinc": {
+                                "description": "Mix",
+                                "next": {}
+                            }
+                        }
+                    }
+                }
+            },
+            "e": {
+                "description": "Friends",
+                "next": {
+                    "f": {
+                        "description": "Fam Friend",
+                        "next": {
+                            "-pexp": {
+                                "description": "Expense",
+                                "next": {}
+                            },
+                            "-pgif": {
+                                "description": "Spending",
+                                "next": {}
+                            },
+                            "-pinc": {
+                                "description": "Mix",
+                                "next": {}
+                            }
+                        }
+                    },
+                    "c": {
+                        "description": "Close Friend",
+                        "next": {
+                            "-pexp": {
+                                "description": "Expense",
+                                "next": {}
+                            },
+                            "-pgif": {
+                                "description": "Spending",
+                                "next": {}
+                            },
+                            "-pinc": {
+                                "description": "Mix",
+                                "next": {}
+                            }
+                        }
+                    },
+                    "n": {
+                        "description": "Who are they",
+                        "next": {
+                            "-pexp": {
+                                "description": "Expense",
+                                "next": {}
+                            },
+                            "-pgif": {
+                                "description": "Spending",
+                                "next": {}
+                            },
+                            "-pinc": {
+                                "description": "Mix",
+                                "next": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
