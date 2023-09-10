@@ -46,7 +46,7 @@ Vue.js Landing Page
                     <div class="row">
                         <div class="4u">
                             <div v-if="account_names" class="select-wrapper">
-                                <select v-model="current_account" @change="current_account = $event.target.value;">
+                                <select v-model="current_account" @change="change_account($event.target.value);">
                                     <option>-</option>
                                     <option v-for="account in Object.keys(account_names)" :value="account" :key="account">[[ account_names[account] ]] - [[account]]</option>
                                 </select>
@@ -83,11 +83,11 @@ Vue.js Landing Page
                                 <!-- code to update current_transaction -->
                                 <div v-show="false">[[get_current_transaction]]</div>
                                 <tbody>
-                                    <tr v-if="current_transaction">
+                                    <tr>
                                         <td>[[transaction_index + 1]]</td>
-                                        <td>[[current_transaction.date]]</td>
-                                        <td>[[current_transaction.description]]</td>
-                                        <td>[[current_transaction.amount]]</td>
+                                        <td v-if="current_transaction">[[current_transaction.date]]</td>
+                                        <td v-if="current_transaction">[[current_transaction.description]]</td>
+                                        <td v-if="current_transaction">[[current_transaction.amount]]</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -184,12 +184,13 @@ Vue.js Landing Page
                         █ █   █ █   █ █     █   █     █   
                     ▀▀▀▀   ▀▀▀  ▀▀▀▀  ▀     ▀ ▀▀▀▀▀   ▀   
                     --->
-                    <div class="row">
-                        <div class="6u 12u(2)">
-                            <a class="button fit" name="Submit" @click.prevent="submit_transaction()">commit</a>
+                    <div v-if="current_transaction != null" class="row">
+                        <div class="4u">
+                            <div v-if="!new_data">&nbsp</div>
+                            <a v-if="new_data" class="button fit" name="Submit" @click.prevent="submit_transaction()">commit</a>
                         </div>
-                        <div v-if="are_you_sure_flag" class="3u right">Are you sure?</div>
-                        <div v-if="are_you_sure_flag" class="3u"><a class="button fit" name="Submit" @click.prevent="submit_transaction(true)">yes</a></div>
+                        <div class="4u right">[[ are_you_sure_flag ? 'are your sure?' : commit_message]]</div>
+                        <div class="4u"><a v-if="are_you_sure_flag"  class="button fit" name="Submit" @click.prevent="submit_transaction(true)">yes</a></div>
                         
                     </div>
                 </form>  

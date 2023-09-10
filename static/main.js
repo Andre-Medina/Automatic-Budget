@@ -38,7 +38,9 @@ const app = Vue.createApp({
         current_transaction: null,
         short_description: '',
 
-        // are you sure
+        // commiting
+        new_data: false,
+        commit_message: "",
         are_you_sure_flag: null,
       };
     },
@@ -84,7 +86,7 @@ const app = Vue.createApp({
         }
         
         // returns code
-        // console.log(code)
+        console.log(code)
         return code
       },
 
@@ -93,6 +95,9 @@ const app = Vue.createApp({
       //  
       // calculates current transaction
       async get_current_transaction(){
+        this.reset_code()
+        this.commit_message = ""
+        this.are_you_sure_flag = false
         //update are you sure
         if(this.current_account){
           try{
@@ -101,6 +106,7 @@ const app = Vue.createApp({
             console.log('new update transaction')
             this.current_transaction = returned.data.transaction
             this.deal_with_prediction(returned.data.prediction)
+            this.new_data = true
             return returned.data
           }catch(error){
             throw error
@@ -144,6 +150,11 @@ const app = Vue.createApp({
         return this.are_you_sure_flag
       },
       
+      change_account(account){
+        this.reset_code()
+        this.current_account = account
+      },
+
       //  █▀▀▀▄ █▀▀▀ ▄▀▀▀▀ ▄▀▀▀ █▀▀▀▄ ▀▀█▀▀ █▀▀▄ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
       //  █   █ █▄▄  ▀▄▄▄  █    █▄▄▄▀   █   █▄▄▀   █     █   █    █ █ ▀▄  █ 
       //  █   █ █        █ █    █  ▀█   █   █      █     █   █    █ █   ▀▄█ 
@@ -175,7 +186,7 @@ const app = Vue.createApp({
 
       },
 
-      calculate_selected_levels_all(min_level = 1){
+      calculate_selected_levels_all(min_level = 0){
 
         for(let recalc_level = min_level + 1; recalc_level < this.selected_code.length; recalc_level ++){
           // console.log('calculating levels for ' + recalc_level)
@@ -259,6 +270,9 @@ const app = Vue.createApp({
         this.transaction_index += distance
       },
 
+      //  █▀▄ █▀▀ ▄▀█ █      █ █ █ █ ▀█▀ █ █    █▀█ █▀█ █▀▀ █▀▄ █ █▀▀ ▀█▀ █ █▀█ █▄ █ 
+      //  █▄▀ ██▄ █▀█ █▄▄ ▄▄ ▀▄▀▄▀ █  █  █▀█ ▄▄ █▀▀ █▀▄ ██▄ █▄▀ █ █▄▄  █  █ █▄█ █ ▀█ 
+      //  
       deal_with_prediction(prediction){
         if(prediction == null){
           return
@@ -268,9 +282,11 @@ const app = Vue.createApp({
           // console.log(prediction.description_tag)
 
           console.log(prediction.selected_levels)
-          console.log(this.selected_levels)
-          this.selected_levels = prediction.selected_levels
-          console.log(this.selected_levels)
+          console.log(this.selected_code)
+          if(prediction.selected_levels != null){
+            this.selected_code = prediction.selected_levels.map(word => word.toLowerCase());
+          }
+          console.log(this.selected_code)
 
           console.log(prediction.short_description)
           console.log(prediction.current_movement_type)
@@ -291,7 +307,7 @@ const app = Vue.createApp({
         if(!are_you_sure){
           if(
             this.current_transaction == null | 
-            this.movement_types == null | 
+            this.current_movement_type == null | 
             this.selected_code[0] == null 
             ){
               this.are_you_sure_flag = true
@@ -320,6 +336,8 @@ const app = Vue.createApp({
             .then((response) => response.json())
             .then((returned) => {
               console.log(returned);
+              this.commit_message = 'Success!'
+              this.new_data = false
             });
         }
       }
