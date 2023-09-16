@@ -102,14 +102,24 @@ const app = Vue.createApp({
         if(this.current_account){
           try{
             const response = await fetch("/data/statement/" + this.current_account + '?transaction=' + this.transaction_index, {method:'GET'})
+            if (!response.ok) { // if the status code is not 200-299
+              throw new Error(response.statusText); // throw an error with the status text
+            }
+            console.log(response)
             const returned = await response.json()  
+            console.log(returned)
+            if (returned.status == 206){
+              this.transaction_index = returned.data.max_transactions - 1
+              return null
+            }
             console.log('new update transaction')
             this.current_transaction = returned.data.transaction
             this.deal_with_prediction(returned.data.prediction)
             this.new_data = true
             return returned.data
           }catch(error){
-            throw error
+            console.error(error); // log the error to the console
+            alert(error); // show an alert with the error message
           }
         }else{
           return null
@@ -333,11 +343,21 @@ const app = Vue.createApp({
                 date: this.current_transaction.date              
               })            
             })
-            .then((response) => response.json())
+            .then((response) => {
+              if (response.ok) { // if the status code is 200-299
+                return response.json(); // parse the response as JSON
+              } else {
+                throw new Error(response.statusText); // throw an error with the status text
+              }
+            })
             .then((returned) => {
               console.log(returned);
-              this.commit_message = 'Success!'
+              this.commit_message = returned.message
               this.new_data = false
+            })
+            .catch((error) => {
+              console.error(error); // log the error to the console
+              alert(error); // show an alert with the error message
             });
         }
       }
@@ -354,27 +374,58 @@ const app = Vue.createApp({
       //  █▄▄ ██▄ ▀▄▀ ██▄ █▄▄ ▄█ 
       //  
       fetch("/data/level/1", {method:'GET'})
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.ok) { // if the status code is 200-299
+            return response.json(); // parse the response as JSON
+          } else {
+            throw new Error(response.statusText); // throw an error with the status text
+          }
+        })
         .then((returned) => {
           console.log('initial reponse:');
           console.log(returned);
           this.description_levels.level_1 = returned.data;
           this.selected_levels[0] = this.description_levels.level_1;
+        })
+        .catch((error) => {
+          console.error(error); // log the error to the console
+          alert(error); // show an alert with the error message
         });
 
       fetch("/data/level/2", {method:'GET'})
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.ok) { // if the status code is 200-299
+            return response.json(); // parse the response as JSON
+          } else {
+            throw new Error(response.statusText); // throw an error with the status text
+          }
+        })
         .then((returned) => {
-          this.description_levels.level_2 = returned.data;
+          this.description_levels.level_2 = returned.data; // assign the data to your state
+        })
+        .catch((error) => {
+          console.error(error); // log the error to the console
+          alert(error); // show an alert with the error message
         });
+
 
       //  █▀ ▀█▀ ▄▀█ ▀█▀ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀   ▄▀█ █▀▀ █▀▀ █▀█ █ █ █▄ █ ▀█▀ █▀ 
       //  ▄█  █  █▀█  █  ██▄ █ ▀ █ ██▄ █ ▀█  █    █▀█ █▄▄ █▄▄ █▄█ █▄█ █ ▀█  █  ▄█ 
       //  
       fetch("/data/config/accounts", {method:'GET'})
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.ok) { // if the status code is 200-299
+            return response.json(); // parse the response as JSON
+          } else {
+            throw new Error(response.statusText); // throw an error with the status text
+          }
+        })
         .then((returned) => {
           this.account_names = returned.data;
+        })
+        .catch((error) => {
+          console.error(error); // log the error to the console
+          alert(error); // show an alert with the error message
         });
 
         
@@ -382,9 +433,19 @@ const app = Vue.createApp({
       //  █ ▀ █ █▄█ ▀▄▀ ██▄ █ ▀ █ ██▄ █ ▀█  █  ▄▄  █   █  █▀▀ ██▄ ▄█ 
       //  
       fetch("/data/config/movement_types", {method:'GET'})
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.ok) { // if the status code is 200-299
+            return response.json(); // parse the response as JSON
+          } else {
+            throw new Error(response.statusText); // throw an error with the status text
+          }
+        })
         .then((returned) => {
           this.movement_types = returned.data;
+        })
+        .catch((error) => {
+          console.error(error); // log the error to the console
+          alert(error); // show an alert with the error message
         });
 
       //  █▀█ ▀█▀ █ █ █▀▀ █▀█ 

@@ -73,7 +73,9 @@ def test():
 @app.route("/data/<data_type>/<extra>", methods=['GET','POST'])
 def get_data(data_type, extra):
     response_object = {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "data": [],
+        "message": "",
         }
     
 
@@ -88,11 +90,13 @@ def get_data(data_type, extra):
         if data_type == "level":
             if extra == "1":
                 response_object['data'] =  md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_1)
-                status_code = 200
+                response_object["message"] = 'success'
+                response_object['status'] = 200
 
             elif extra == "2":
                 response_object['data'] = md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_2)
-                status_code = 200
+                response_object["message"] = 'success'
+                response_object['status'] = 200
 
 
         #  █▀ ▀█▀ ▄▀█ ▀█▀ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀ 
@@ -101,8 +105,11 @@ def get_data(data_type, extra):
         elif data_type == "statement":
             extra
             transaction = request.args.get('transaction', default = 0, type = int)
-            response_object['data'] = statements.get_transaction(extra, transaction)
-            status_code = 201
+            (
+                response_object['data'],
+                response_object["message"],
+                response_object['status'],
+            ) = statements.get_transaction(extra, transaction)
 
 
 
@@ -111,34 +118,37 @@ def get_data(data_type, extra):
         #  
         elif data_type == "config" and extra == "accounts":
             response_object['data'] = md.ALL_ACCOUNT_LIKE
-            status_code = 200
+            response_object["message"] = 'success'
+            response_object['status'] = 200
             
         elif data_type == "config" and extra == "movement_types":
             response_object['data'] = md.MOVEMENT_TYPES
-            status_code = 200
+            response_object["message"] = 'success'
+            response_object['status'] = 200
 
 
         else:
-            response_object['data'] = "page not found"
-            status_code = 400
+            response_object["message"] = 'page not found'
+            response_object['status'] = 400
 
 
     #  █▀█ █▀█ █▀ ▀█▀ 
     #  █▀▀ █▄█ ▄█  █  
-    #  
+    #  dont need to post data, only code and message
     elif request.method == "POST":
         if data_type == "statement":
-            response_object['data'], status_code = statements.post_transaction(json.loads(request.data.decode()))
+            response_object['message'], response_object['status'] = statements.post_transaction(json.loads(request.data.decode()))
         
         else:
-            response_object['data'] = "page not found"
-            status_code = 404
+            response_object['message'] = "page not found"
+            response_object['status'] = 404
         
     else:
-        response_object['data'] = "please use get"
-        status_code = 400
+        response_object['message'] = "please use get"
+        response_object['status'] = 400
     
-    return jsonify(response_object), status_code
+    print(response_object)
+    return jsonify(response_object), f"{response_object['status']} {response_object['message']}"
 
 
 
