@@ -16,6 +16,10 @@ const app = Vue.createApp({
     //  
     data() {
       return {
+        // general
+        temp_alert: "",
+        show_alert: false,
+
         // accounts
         account_names: null,
         current_account: null,
@@ -96,6 +100,7 @@ const app = Vue.createApp({
       // calculates current transaction
       async get_current_transaction(){
         this.reset_code()
+        this.short_description = ""
         this.commit_message = ""
         this.are_you_sure_flag = false
         //update are you sure
@@ -111,6 +116,8 @@ const app = Vue.createApp({
 
             // if nothing was found (206 is for nothing found)
             if (returned.status == 206){
+
+              this.alert('too far', 1000)
 
               // sets transaction index to the max
               this.transaction_index = returned.data.max_transactions - 1
@@ -131,7 +138,7 @@ const app = Vue.createApp({
           // otherwise if there was an error or a bad response code
           }catch(error){
             console.error(error); // log the error to the console
-            alert(error); // show an alert with the error message
+            this.alert(error); // show an alert with the error message
           }
         }else{
           return null
@@ -157,6 +164,18 @@ const app = Vue.createApp({
       //  █   █ █    █   ▀▄█ █    █  ▀█ █   █ █    
       //   ▀▀▀▀ ▀▀▀▀ ▀     ▀ ▀▀▀▀ ▀   ▀ ▀   ▀ ▀▀▀▀ 
       //  
+
+      
+      alert(alert, timeout = 2000){
+        this.temp_alert = alert;
+        this.show_alert = true;
+        console.log('starting timeout')
+        setTimeout(() => {
+          console.log('timeout reached')
+          this.show_alert = false
+        }, timeout);
+      },
+
       //  █▀█ █▀█ █ █▄ █ ▀█▀ █ █ ▄▀█ █   █ █ █▀▀ 
       //  █▀▀ █▀▄ █ █ ▀█  █  ▀▄▀ █▀█ █▄▄ █▄█ ██▄ 
       //  
@@ -279,6 +298,7 @@ const app = Vue.createApp({
       prev_transaction(distance){
         if(this.transaction_index - distance < 0){
           console.log('far enough')
+          this.alert('far enough', 1000)
           return
         }
         this.transaction_index -= distance
@@ -299,6 +319,9 @@ const app = Vue.createApp({
 
         // if there were no predictions returned
         if(prediction == null){
+          
+          // might add something to reset other variables?
+
           return
         }else{
 
@@ -307,10 +330,12 @@ const app = Vue.createApp({
           // not dealing with tags atm
           // console.log(prediction.description_tag)
 
-          console.log(prediction.selected_levels)
-          console.log(this.selected_code)
+          // console.log(prediction.selected_levels)
+          // console.log(this.selected_code)
+
+          // deals with prediction tag
           if(prediction.description_tag != null){
-            // havent done anything with the tag yet
+            // have not tested this yet. unsure if working
             this.description_tag = prediction.description_tag
           }
 
@@ -327,20 +352,23 @@ const app = Vue.createApp({
           }else{
             this.short_description = ""
           }
-
+          
+          // updates movement
           if(prediction.movement != null){
             this.current_movement_type = prediction.movement
           }else{
             this.current_movement_type = null
           }
           
-          console.log(prediction.short_description)
-          console.log(prediction.current_movement_type)
-          // selected_levels
+
+          // console.log(prediction.short_description)
+          // console.log(prediction.current_movement_type)
+          // // selected_levels
           // short_description
           // current_movement_type
+          
+          // recalculates the selected levels due to changing data
           this.calculate_selected_levels_all()
-
         }
 
 
@@ -393,7 +421,7 @@ const app = Vue.createApp({
             })
             .catch((error) => {
               console.error(error); // log the error to the console
-              alert(error); // show an alert with the error message
+              this.alert(error); // show an alert with the error message
             });
         }
       }
@@ -425,7 +453,7 @@ const app = Vue.createApp({
         })
         .catch((error) => {
           console.error(error); // log the error to the console
-          alert(error); // show an alert with the error message
+          this.alert(error); // show an alert with the error message
         });
 
       fetch("/data/level/2", {method:'GET'})
@@ -441,7 +469,7 @@ const app = Vue.createApp({
         })
         .catch((error) => {
           console.error(error); // log the error to the console
-          alert(error); // show an alert with the error message
+          this.alert(error); // show an alert with the error message
         });
 
 
@@ -461,7 +489,7 @@ const app = Vue.createApp({
         })
         .catch((error) => {
           console.error(error); // log the error to the console
-          alert(error); // show an alert with the error message
+          this.alert(error); // show an alert with the error message
         });
 
         
@@ -481,7 +509,7 @@ const app = Vue.createApp({
         })
         .catch((error) => {
           console.error(error); // log the error to the console
-          alert(error); // show an alert with the error message
+          this.alert(error); // show an alert with the error message
         });
 
       //  █▀█ ▀█▀ █ █ █▀▀ █▀█ 

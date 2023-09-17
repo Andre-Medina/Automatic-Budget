@@ -35,7 +35,10 @@ Vue.js Landing Page
         <div class='container'>
         <div id='app'>  <!-- id = 'app' is crutial -->
             <div align='center'>   
-                <h1>Please enter a message and parameters</h1>
+                <div class = 'row'>
+                    <div class = "4u">&nbsp</div>
+                    <div v-show="show_alert" class="4u error"><h1 class="error">[[temp_alert]]</h1></div>
+                </div>
                 <form id="myform" method="POST" action="">
                     <!---
                     ▄▀▀▀▄ ▄▀▀▀ ▄▀▀▀ ▄▀▀▀▀▄ █   █ █▄    █ ▀▀█▀▀    ▄▀▀▀▀ █▀▀▀ █    █▀▀▀ ▄▀▀▀ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 

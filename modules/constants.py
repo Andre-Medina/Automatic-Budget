@@ -52,7 +52,7 @@ MOVEMENT_TYPES = ['input','output','transfer','work']
 SAVED_TRANSACTION_COLUMNS = ['movement','amount','change','total','tax','where','code','description_short','date']
 SAVED_TRANSACTION_COLUMNS_NEEDED = ['movement','amount','where','code','description_short','date']
 SAVED_CLASSIFICATION_COLUMNS_NEEDED = ['movement','date','where','description_full','code','description_short']
-SAVED_CLASSIFICATION_COLUMNS = ['movement','date','where','description_full','code','description_short']
+SAVED_CLASSIFICATION_COLUMNS = ['movement','date','where','description_full','code','description_short','submitted_date']
 
 
 

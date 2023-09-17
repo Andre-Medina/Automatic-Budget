@@ -187,6 +187,9 @@
 	--large-height: 1400px;
 }
 /* added */
+	.error{
+		color: var(--error-text) !important;
+	}
 
 	.video	{
 		/* border-radius:m;  */
@@ -280,7 +283,8 @@
 		line-height: 1em;
 		margin: 0 0 1em 0;
 		letter-spacing: -0.01em;
-	}
+	}	
+	
 
 		h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 			color: inherit;

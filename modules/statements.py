@@ -89,6 +89,25 @@ class Statements:
     #  █▀▀ █▀▄ ██▄ █▄▀ █ █▄▄  █  ▄▄  █  █▀▄ █▀█ █ ▀█ ▄█ █▀█ █▄▄  █  █ █▄█ █ ▀█ 
     #  
     def predict_transaction(self, transaction):
+        ''''
+        current does a basic prediction algorithm atm. 
+
+        parameters
+        ----
+        transaction
+            full row of from statements, including date, description amount etc..
+
+        return
+        -----
+        prediction
+            predicted values to be sent to front end, in a dictionary format of
+            {
+                'description_tag': {'tag': 'x', 'name': 'bob'},
+                'selected_code': [1,'s','f'],
+                'description_short': 'asdf',
+                'movement': 'input',
+            }
+        '''
         try:
             history = pd.read_csv(ROOT_DIR + HISTORIC_CLASSIFICATIONS,header=0)\
             
@@ -178,6 +197,8 @@ class Statements:
         data['tax'] = data['tax'] if 'tax' in data else 0
 
         data['total'] = float(data['amount']) - float(data['change'])
+        # adds todays date
+        data['submitted_date'] = pd.Timestamp.now()
 
         # printing data
         print('data: ' + str(data))
