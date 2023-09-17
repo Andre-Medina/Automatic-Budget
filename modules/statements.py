@@ -97,24 +97,38 @@ class Statements:
             print('matching history: ' + str(selected_history.shape))
             # print('matchin codes: ' + str(selected_history['code']))
             # print('mode of codes: ' + str(selected_history['code'].mode().values))
-            code = selected_history['code'].mode().values[0]
-            current_movement_type = selected_history['movement'].mode().values[0]
-            short_description = selected_history['description_short'].mode().values[0]
-
-            code_half = code.split('=')[1].split('-')
-            selected_levels = [code[0]] + [*(code_half[0])]
-
-
-            description_tag = {'tag': code_half[1][0],'name': code_half[1][1:]} if len(code_half) > 1 else {'tag':None,'name': None}
-
-            prediction = {
-                'description_tag':description_tag,
-                'selected_levels':selected_levels,
-                'short_description':short_description,
-                'current_movement_type':current_movement_type
-            }
             
+            # if nothing was selected
+            if selected_history.shape[0] == 0:
+                print('Nothing to predict')
+                return None
+                    
+
+            predicted = {}
+            for column in ['code','movement','description_short']:
+
+                #
+                matching_values = selected_history[column].mode().values
+                if matching_values:
+                    
+                    # selects the most common element
+                    predicted[column] = matching_values[0]
+
+                    # if predicting the code, does some manipulations to split it up
+                    if column == 'code':
+                        code_half = predicted[column].split('=')[1].split('-')
+                        predicted['selected_code'] = [predicted[column][0]] + [*(code_half[0])]
+                        predicted['description_tag'] = {'tag': code_half[1][0],'name': code_half[1][1:]} if len(code_half) > 1 else {'tag':None,'name': None}
+
+            
+            # sets output, adds null if no data
+            prediction = {}
+            for parameter in ['description_tag','selected_code','description_short','movement']:
+                prediction[parameter] = predicted[parameter] if parameter in predicted else None
+
             return prediction
+        
+        # if there was any error, returns nothing
         except Exception as e:
             traceback.print_exc()
             return None

@@ -108,15 +108,27 @@ const app = Vue.createApp({
             console.log(response)
             const returned = await response.json()  
             console.log(returned)
+
+            // if nothing was found (206 is for nothing found)
             if (returned.status == 206){
+
+              // sets transaction index to the max
               this.transaction_index = returned.data.max_transactions - 1
               return null
             }
+
+            // otherwise updates the with the new
             console.log('new update transaction')
+
+            // extracts the data
             this.current_transaction = returned.data.transaction
             this.deal_with_prediction(returned.data.prediction)
+            
+            // sets flag and returns
             this.new_data = true
             return returned.data
+
+          // otherwise if there was an error or a bad response code
           }catch(error){
             console.error(error); // log the error to the console
             alert(error); // show an alert with the error message
@@ -284,20 +296,44 @@ const app = Vue.createApp({
       //  █▄▀ ██▄ █▀█ █▄▄ ▄▄ ▀▄▀▄▀ █  █  █▀█ ▄▄ █▀▀ █▀▄ ██▄ █▄▀ █ █▄▄  █  █ █▄█ █ ▀█ 
       //  
       deal_with_prediction(prediction){
+
+        // if there were no predictions returned
         if(prediction == null){
           return
         }else{
+
+          // otherwise deals witht he prediction
           console.log("prediction: ")
           // not dealing with tags atm
           // console.log(prediction.description_tag)
 
           console.log(prediction.selected_levels)
           console.log(this.selected_code)
-          if(prediction.selected_levels != null){
-            this.selected_code = prediction.selected_levels.map(word => word.toLowerCase());
+          if(prediction.description_tag != null){
+            // havent done anything with the tag yet
+            this.description_tag = prediction.description_tag
           }
-          console.log(this.selected_code)
 
+          // updates the selection code
+          if(prediction.selected_code != null){
+            this.selected_code = prediction.selected_code.map(word => word.toLowerCase());
+          }else{
+            this.reset_code()
+          }
+
+          // updates the short_description
+          if(prediction.description_short != null){
+            this.short_description = prediction.description_short;
+          }else{
+            this.short_description = ""
+          }
+
+          if(prediction.movement != null){
+            this.current_movement_type = prediction.movement
+          }else{
+            this.current_movement_type = null
+          }
+          
           console.log(prediction.short_description)
           console.log(prediction.current_movement_type)
           // selected_levels
