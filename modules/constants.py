@@ -27,14 +27,17 @@ CLASSIFICATION_JSON_DIR_LVL_2 = CLASSIFICATION_JSON_DIR + "level_2.json"
 
 HISTORIC_CLASSIFICATIONS = CLASSIFICATION_JSON_DIR + 'historic_classifications.csv'
 
-TRANSACTIONS_OUTPUT_DIR = CLASSIFIED_TRANSACTIONS_DIR + 'classified_output.csv'
+TRANSACTIONS_OUTPUT_DIR_NEEDS_DATE_AND_DOT_CSV = CLASSIFIED_TRANSACTIONS_DIR + 'classified_output_' # + date.csv
 
 
 
 STATEMENT_ACCOUNTS = {
     'pink_card': 'bd',
     'blue_card': 'be',
+    'green_card': 'br',
+    'input': 'bs',
   }
+
 ALL_ACCOUNT_LIKE = STATEMENT_ACCOUNTS | {
     'loan': '2=-l',
 }

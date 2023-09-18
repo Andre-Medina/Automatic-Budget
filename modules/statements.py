@@ -250,7 +250,8 @@ class Statements:
         # inserts the data into transaction file
         try:
             
-            file_name = ROOT_DIR + TRANSACTIONS_OUTPUT_DIR
+            file_name = ROOT_DIR + TRANSACTIONS_OUTPUT_DIR_NEEDS_DATE_AND_DOT_CSV + pd.to_datetime(data['date']).to_period('W-SUN').start_time.strftime('%d-%b-%Y') + '.csv'
+            print(file_name)
 
             if os.path.exists(file_name):
                 transactions = pd.read_csv(file_name, header = 0)
