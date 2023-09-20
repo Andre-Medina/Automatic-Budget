@@ -71,6 +71,8 @@ const app = Vue.createApp({
         console.log("calcing tag level depth:")
         console.log(this.code_tag)
         console.log(this.code_tag.selected_tag)
+        console.log(this.tag_selected_levels[0])
+        console.log(Object.keys(this.tag_selected_levels[0]).length > 0)
         console.log('Tag depth is now' + this.code_tag.selected_tag.length)
         return this.code_tag.selected_tag.length
       },
@@ -109,7 +111,7 @@ const app = Vue.createApp({
       //  
       // calculates current transaction
       async get_current_transaction(){
-        this.reset_code()
+        this.reset()
         this.short_description = ""
         this.commit_message = ""
         this.are_you_sure_flag = false
@@ -202,7 +204,7 @@ const app = Vue.createApp({
       },
       
       change_account(account){
-        this.reset_code()
+        this.reset()
         this.current_account = account
       },
 
@@ -220,8 +222,10 @@ const app = Vue.createApp({
         var selected_code
 
         if (tag){
-          selected_code = this.tag_selected_levels
+          console.log('calculating for tag')
+          selected_code = this.code_tag.selected_tag
         }else{
+          console.log('calculating for normal')
           selected_code = this.selected_code
         }
 
@@ -243,11 +247,14 @@ const app = Vue.createApp({
 
         console.log('selected levels is \\\|/')
         if (tag){
-          this.tag_selected_levels = selected_code
+          this.code_tag.selected_tag = selected_code
+          console.log(this.code_tag.selected_tag)
+          console.log(this.tag_selected_levels)
         }else{
           this.selected_code = selected_code
+          console.log(this.selected_code)
+          console.log(this.selected_levels)
         }
-
       },
 
       update_selected_levels(tag = false, min_level = 0){
@@ -256,34 +263,35 @@ const app = Vue.createApp({
         var selected_code
 
         if (tag){
-          selected_levels = this.code_tag.selected_tag
+          selected_levels = this.tag_selected_levels
           description_levels = this.description_levels.level_3
-          selected_code = this.tag_selected_levels
+          selected_code = this.code_tag.selected_tag
         }else{
           selected_levels = this.selected_levels
           description_levels = this.description_levels.level_2
           selected_code = this.selected_code
         }
 
-        this.calculate_selected_levels_all(min_level, selected_code, selected_levels, description_levels)
+        this.calculate_selected_levels_all(min_level, selected_code, selected_levels, description_levels, tag)
 
         if (tag){
-          this.code_tag.selected_tag = selected_levels
-          this.tag_selected_levels = selected_code
+          this.code_tag.selected_tag = selected_code
+          this.tag_selected_levels = selected_levels
         }else{
           this.selected_levels = selected_levels
           this.selected_code = selected_code
         }
       },
 
-      calculate_selected_levels_all(min_level = 0, selected_code, selected_levels, description_levels){
+      calculate_selected_levels_all(min_level = 0, selected_code, selected_levels, description_levels, tag = false){
 
         for(let recalc_level = min_level + 1; recalc_level < selected_code.length; recalc_level ++){
           // console.log('calculating levels for ' + recalc_level)
           selected_levels[recalc_level] = this.calculate_selected_level(
             recalc_level, 
             description_levels, 
-            selected_code
+            selected_code,
+            tag
             )
         }
       },
@@ -292,7 +300,7 @@ const app = Vue.createApp({
       //  █▄▄ █▀█ █▄▄ █▄▄ █▄█ █▄▄ █▀█  █  ██▄ ▄▄ ▄█ ██▄ █▄▄ ██▄ █▄▄  █  ██▄ █▄▀ ▄▄ █▄▄ ██▄ ▀▄▀ ██▄ █▄▄ 
       //  
       // returns the list for the correct level
-      calculate_selected_level(calc_level, level, selected_code){
+      calculate_selected_level(calc_level, level, selected_code, tag = false){
         //console.log('WORKING OUT LEVEL: ' + calc_level)
 
         // copys the description levels
@@ -308,7 +316,7 @@ const app = Vue.createApp({
             break
           }
           // if the level is root, skips
-          if(level == 0){
+          if((level == 0) && (!tag)){
             continue
           }
           // if the level is greater than whats needed, skips it
@@ -335,9 +343,27 @@ const app = Vue.createApp({
       //  █▀▄ ██▄ ▄█ ██▄  █  ▄▄ █▄▄ █▄█ █▄▀ ██▄ 
       //  
       // resets code
-      reset_code(){
-        this.selected_code = [null]
-        this.selected_levels = [this.description_levels.level_1]
+      reset(what = 'all'){
+        switch (what) {
+          case 'code':
+            this.selected_code = [null]
+            this.selected_levels = [this.description_levels.level_1]
+            break;
+        
+          case 'tag':
+            this.tag_selected_levels = [this.description_levels.level_3]
+            this.code_tag = {selected_tag: [null], extra: null}
+            break;
+
+          case 'all':
+            this.reset('tag')
+            this.reset('code')
+            break;
+
+          default:
+            break;
+        }
+
       },
 
       //  ▀▀█▀▀ █▀▀▀▄ ▄▀▀▀▄ █▄    █ ▄▀▀▀▀ ▄▀▀▀▄ ▄▀▀▀ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
@@ -398,7 +424,7 @@ const app = Vue.createApp({
           if(prediction.selected_code != null){
             this.selected_code = prediction.selected_code.map(word => word.toLowerCase());
           }else{
-            this.reset_code()
+            this.reset()
           }
 
           // updates the short_description
@@ -539,6 +565,8 @@ const app = Vue.createApp({
         .then((returned) => {
           this.description_levels.level_3 = returned.data; // assign the data to your state
           this.tag_selected_levels[0] = this.description_levels.level_3;
+          console.log('tag selected levels:')
+          console.log(this.tag_selected_levels)
         })
         .catch((error) => {
           console.error(error); // log the error to the console

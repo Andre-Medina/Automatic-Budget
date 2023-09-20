@@ -128,7 +128,7 @@ Vue.js Landing Page
                     --->
                     <div>
                         <ul class="actions fit">
-                            <li><a class="button fit" @click="reset_code()">clear code</a></li>
+                            <li><a class="button fit" @click="reset('code')">clear code</a></li>
                             <li v-if="description_levels.level_1" >
                                 <div class="select-wrapper">
                                     <select v-model="selected_code[0]" @change="set_description($event.target.value, 0)">
@@ -148,19 +148,22 @@ Vue.js Landing Page
                         </ul>
                     </div>
                     <div class="row">
-                        <div class = "6u">
+                        <div class = "4u">
+                            <a class="button fit" @click="reset('tag')">clear tag</a>
+                        </div>
+                        <div class = "4u">
                             <ul class="actions fit">
-                                <li v-if="description_levels.level_3"  v-for="level_index in (tag_level_depth - 1)"> <!--- Object.keys(description_levels.level_2).length"> --->
-                                    <div v-if="tag_selectected_levels[level_index] && (Object.keys(tag_selectected_levels[level_index]).length > 0)" class="select-wrapper">
-                                        <select name="category" id="category" v-model="selected_code[level_index]" @change="set_description($event.target.value, level_index, true)">
+                                <li v-if="description_levels.level_3"  v-for="level_index in (tag_level_depth)">
+                                    <div v-if="tag_selected_levels[level_index - 1] && (Object.keys(tag_selected_levels[level_index - 1]).length > 0)" class="select-wrapper">
+                                        <select name="category" id="category" v-model="code_tag.selected_tag[level_index - 1]" @change="set_description($event.target.value, level_index - 1, true)">
                                             <option>-</option>
-                                            <option v-for="code in Object.keys(tag_selectected_levels[level_index])" :value="code" key="code">[[code]] - [[tag_selectected_levels[level_index][code].description]]</option>
+                                            <option v-for="code in Object.keys(tag_selected_levels[level_index - 1])" :value="code" key="code">[[code]] - [[tag_selected_levels[level_index - 1][code].description]]</option>
                                         </select>
                                     </div>
                                 </li>
                             </ul>
                         </div>
-                        <div class = "6u">
+                        <div class = "4u">
                             <input type="text" name="user" placeholder="short description" v-model="code_tag.name">
                         </div>
                     </div>
