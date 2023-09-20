@@ -137,7 +137,7 @@ class Statements:
                     if column == 'code':
                         code_half = predicted[column].split('=')[1].split('-')
                         predicted['selected_code'] = [predicted[column][0]] + [*(code_half[0])]
-                        predicted['code_tag'] = {'selected_tag': code_half[1][0],'extra': code_half[1][1:]} if len(code_half) > 1 else {'tag':None,'name': None}
+                        predicted['code_tag'] = {'selected_tag': code_half[1][0],'extra': code_half[1][1:]} if len(code_half) > 1 else None # {'selected_tag':None,'name': None}
 
             
             # sets output, adds null if no data

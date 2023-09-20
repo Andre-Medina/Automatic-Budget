@@ -37,7 +37,7 @@ const app = Vue.createApp({
         
         // tags
         code_tag: {selected_tag: [null], extra: null},
-        tag_selectected_levels: [null],
+        tag_selected_levels: [null],
 
         // transactions
         transaction_index: 0,
@@ -68,6 +68,9 @@ const app = Vue.createApp({
       },
 
       tag_level_depth(){
+        console.log("calcing tag level depth:")
+        console.log(this.code_tag)
+        console.log(this.code_tag.selected_tag)
         console.log('Tag depth is now' + this.code_tag.selected_tag.length)
         return this.code_tag.selected_tag.length
       },
@@ -214,23 +217,17 @@ const app = Vue.createApp({
       // sets the desction to selected code
       set_description(code, level, tag = false){
 
-        var selected_levels
         var selected_code
-        var description_levels
 
         if (tag){
-          selected_levels = this.selected_levels
-          selected_code = this.selected_code
-          description_levels = this.description_levels.level_3
+          selected_code = this.tag_selected_levels
         }else{
-          selected_levels = this.code_tag.selected_tag
-          selected_code = this.tag_selectected_levels
-          description_levels = this.description_levels.level_2
+          selected_code = this.selected_code
         }
 
         console.log('setting ' + level + " to a code of " + code);
         while(selected_code.length < level + 2){
-          selected_levels.push(null)
+          // selected_levels.push(null)
           selected_code.push(null)
         }
         // console.log('selected levels is \\\|/')
@@ -242,11 +239,41 @@ const app = Vue.createApp({
         console.log('selected code is \\\|/')
         console.log(selected_code)
 
-        this.calculate_selected_levels_all(level, selected_code, selected_levels, description_levels)
+        this.update_selected_levels(tag, level)
 
         console.log('selected levels is \\\|/')
-        console.log(selected_levels)
+        if (tag){
+          this.tag_selected_levels = selected_code
+        }else{
+          this.selected_code = selected_code
+        }
 
+      },
+
+      update_selected_levels(tag = false, min_level = 0){
+        var selected_levels
+        var description_levels
+        var selected_code
+
+        if (tag){
+          selected_levels = this.code_tag.selected_tag
+          description_levels = this.description_levels.level_3
+          selected_code = this.tag_selected_levels
+        }else{
+          selected_levels = this.selected_levels
+          description_levels = this.description_levels.level_2
+          selected_code = this.selected_code
+        }
+
+        this.calculate_selected_levels_all(min_level, selected_code, selected_levels, description_levels)
+
+        if (tag){
+          this.code_tag.selected_tag = selected_levels
+          this.tag_selected_levels = selected_code
+        }else{
+          this.selected_levels = selected_levels
+          this.selected_code = selected_code
+        }
       },
 
       calculate_selected_levels_all(min_level = 0, selected_code, selected_levels, description_levels){
@@ -362,6 +389,8 @@ const app = Vue.createApp({
           // deals with prediction tag
           if(prediction.code_tag != null){
             // have not tested this yet. unsure if working
+            console.log('reading tag')
+            console.log(prediction.code_tag)
             this.code_tag = prediction.code_tag
           }
 
@@ -394,7 +423,8 @@ const app = Vue.createApp({
           // current_movement_type
           
           // recalculates the selected levels due to changing data
-          this.calculate_selected_levels_all()
+          this.update_selected_levels(false)
+          this.update_selected_levels(true)
         }
 
 
@@ -508,6 +538,7 @@ const app = Vue.createApp({
         })
         .then((returned) => {
           this.description_levels.level_3 = returned.data; // assign the data to your state
+          this.tag_selected_levels[0] = this.description_levels.level_3;
         })
         .catch((error) => {
           console.error(error); // log the error to the console
