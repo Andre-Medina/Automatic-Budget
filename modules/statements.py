@@ -137,12 +137,12 @@ class Statements:
                     if column == 'code':
                         code_half = predicted[column].split('=')[1].split('-')
                         predicted['selected_code'] = [predicted[column][0]] + [*(code_half[0])]
-                        predicted['description_tag'] = {'tag': code_half[1][0],'name': code_half[1][1:]} if len(code_half) > 1 else {'tag':None,'name': None}
+                        predicted['code_tag'] = {'selected_tag': code_half[1][0],'extra': code_half[1][1:]} if len(code_half) > 1 else {'tag':None,'name': None}
 
             
             # sets output, adds null if no data
             prediction = {}
-            for parameter in ['description_tag','selected_code','description_short','movement']:
+            for parameter in ['code_tag','selected_code','description_short','movement']:
                 prediction[parameter] = predicted[parameter] if parameter in predicted else None
 
             return prediction

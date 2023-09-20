@@ -24,6 +24,7 @@ CLASSIFICATION_JSON_DIR = DATA_DIR + 'classification/'
 
 CLASSIFICATION_JSON_DIR_LVL_1 = CLASSIFICATION_JSON_DIR + "level_1.json"
 CLASSIFICATION_JSON_DIR_LVL_2 = CLASSIFICATION_JSON_DIR + "level_2.json"
+CLASSIFICATION_JSON_DIR_LVL_3 = CLASSIFICATION_JSON_DIR + "level_3.json"
 
 HISTORIC_CLASSIFICATIONS = CLASSIFICATION_JSON_DIR + 'historic_classifications.csv'
 
@@ -42,10 +43,6 @@ ALL_ACCOUNT_LIKE = STATEMENT_ACCOUNTS | {
     'loan': '2=-l',
 }
 
-
-
-    # 'work': 'w',
-    # 'talley': 't',
 
 
 

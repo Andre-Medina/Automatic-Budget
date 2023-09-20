@@ -93,6 +93,10 @@
                     "b": {
                         "description": "Pub/ Bar",
                         "next": {}
+                    },
+                    "e": {
+                        "description": "African",
+                        "next": {}
                     }
                 }
             }
@@ -518,37 +522,11 @@
                 "next": {
                     "d": {
                         "description": "Dads side",
-                        "next": {
-                            "-pexp": {
-                                "description": "Expense",
-                                "next": {}
-                            },
-                            "-pgif": {
-                                "description": "Spending",
-                                "next": {}
-                            },
-                            "-pinc": {
-                                "description": "Mix",
-                                "next": {}
-                            }
-                        }
+                        "next": {}
                     },
                     "m": {
                         "description": "Mums side",
-                        "next": {
-                            "-pexp": {
-                                "description": "Expense",
-                                "next": {}
-                            },
-                            "-pgif": {
-                                "description": "Spending",
-                                "next": {}
-                            },
-                            "-pinc": {
-                                "description": "Mix",
-                                "next": {}
-                            }
-                        }
+                        "next": {}
                     }
                 }
             },
@@ -557,54 +535,15 @@
                 "next": {
                     "f": {
                         "description": "Fam Friend",
-                        "next": {
-                            "-pexp": {
-                                "description": "Expense",
-                                "next": {}
-                            },
-                            "-pgif": {
-                                "description": "Spending",
-                                "next": {}
-                            },
-                            "-pinc": {
-                                "description": "Mix",
-                                "next": {}
-                            }
-                        }
+                        "next": {}
                     },
                     "c": {
                         "description": "Close Friend",
-                        "next": {
-                            "-pexp": {
-                                "description": "Expense",
-                                "next": {}
-                            },
-                            "-pgif": {
-                                "description": "Spending",
-                                "next": {}
-                            },
-                            "-pinc": {
-                                "description": "Mix",
-                                "next": {}
-                            }
-                        }
+                        "next": {}
                     },
                     "n": {
                         "description": "Who are they",
-                        "next": {
-                            "-pexp": {
-                                "description": "Expense",
-                                "next": {}
-                            },
-                            "-pgif": {
-                                "description": "Spending",
-                                "next": {}
-                            },
-                            "-pinc": {
-                                "description": "Mix",
-                                "next": {}
-                            }
-                        }
+                        "next": {}
                     }
                 }
             }

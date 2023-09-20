@@ -147,6 +147,23 @@ Vue.js Landing Page
                             </li>
                         </ul>
                     </div>
+                    <div class="row">
+                        <div class = "6u">
+                            <ul class="actions fit">
+                                <li v-if="description_levels.level_3"  v-for="level_index in (tag_level_depth - 1)"> <!--- Object.keys(description_levels.level_2).length"> --->
+                                    <div v-if="tag_selectected_levels[level_index] && (Object.keys(tag_selectected_levels[level_index]).length > 0)" class="select-wrapper">
+                                        <select name="category" id="category" v-model="selected_code[level_index]" @change="set_description($event.target.value, level_index, true)">
+                                            <option>-</option>
+                                            <option v-for="code in Object.keys(tag_selectected_levels[level_index])" :value="code" key="code">[[code]] - [[tag_selectected_levels[level_index][code].description]]</option>
+                                        </select>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class = "6u">
+                            <input type="text" name="user" placeholder="short description" v-model="code_tag.name">
+                        </div>
+                    </div>
                     <!---
                     █▀▀▄ █▀▀▀▄ ▀▀█▀▀ █▄    █ ▀▀█▀▀ ▀▀█▀▀ █▄    █ ▄▀▀▀▀    ▄▀▀▀▀▄ █   █ ▀▀█▀▀ █▀▀▄ █   █ ▀▀█▀▀ 
                     █▄▄▀ █▄▄▄▀   █   █ ▀▄  █   █     █   █ ▀▄  █ █  ▄▄    █    █ █   █   █   █▄▄▀ █   █   █   

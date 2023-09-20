@@ -29,13 +29,15 @@ const app = Vue.createApp({
         // description
         description_levels: {
           level1: null,
-          level2: null
+          level2: null,
+          level3: null
         },
         selected_code: [null],
         selected_levels: [null],
         
         // tags
-        description_tag: {tag: null, name: null},
+        code_tag: {selected_tag: [null], extra: null},
+        tag_selectected_levels: [null],
 
         // transactions
         transaction_index: 0,
@@ -63,6 +65,11 @@ const app = Vue.createApp({
       level_depth(){
         console.log('Depth is now ' + this.selected_code.length)
         return this.selected_code.length
+      },
+
+      tag_level_depth(){
+        console.log('Tag depth is now' + this.code_tag.selected_tag.length)
+        return this.code_tag.selected_tag.length
       },
       
       // calculates level code
@@ -205,33 +212,52 @@ const app = Vue.createApp({
       //  ▄█ ██▄  █  ▄▄ █▄▀ ██▄ ▄█ █▄▄ █▀▄ █ █▀▀  █  █ █▄█ █ ▀█ 
       //  
       // sets the desction to selected code
-      set_description(code, level){
+      set_description(code, level, tag = false){
+
+        var selected_levels
+        var selected_code
+        var description_levels
+
+        if (tag){
+          selected_levels = this.selected_levels
+          selected_code = this.selected_code
+          description_levels = this.description_levels.level_3
+        }else{
+          selected_levels = this.code_tag.selected_tag
+          selected_code = this.tag_selectected_levels
+          description_levels = this.description_levels.level_2
+        }
+
         console.log('setting ' + level + " to a code of " + code);
-        while(this.selected_code.length < level + 2){
-          this.selected_levels.push(null)
-          this.selected_code.push(null)
+        while(selected_code.length < level + 2){
+          selected_levels.push(null)
+          selected_code.push(null)
         }
         // console.log('selected levels is \\\|/')
-        // console.log(this.selected_levels)
-        // console.log(this.selected_levels[level])
+        // console.log(selected_levels)
+        // console.log(selected_levels[level])
         
-        this.selected_code[level] = code
+        selected_code[level] = code
 
         console.log('selected code is \\\|/')
-        console.log(this.selected_code)
+        console.log(selected_code)
 
-        this.calculate_selected_levels_all(level)
+        this.calculate_selected_levels_all(level, selected_code, selected_levels, description_levels)
 
         console.log('selected levels is \\\|/')
-        console.log(this.selected_levels)
+        console.log(selected_levels)
 
       },
 
-      calculate_selected_levels_all(min_level = 0){
+      calculate_selected_levels_all(min_level = 0, selected_code, selected_levels, description_levels){
 
-        for(let recalc_level = min_level + 1; recalc_level < this.selected_code.length; recalc_level ++){
+        for(let recalc_level = min_level + 1; recalc_level < selected_code.length; recalc_level ++){
           // console.log('calculating levels for ' + recalc_level)
-          this.selected_levels[recalc_level] = this.calculate_selected_level(recalc_level)
+          selected_levels[recalc_level] = this.calculate_selected_level(
+            recalc_level, 
+            description_levels, 
+            selected_code
+            )
         }
       },
 
@@ -239,13 +265,13 @@ const app = Vue.createApp({
       //  █▄▄ █▀█ █▄▄ █▄▄ █▄█ █▄▄ █▀█  █  ██▄ ▄▄ ▄█ ██▄ █▄▄ ██▄ █▄▄  █  ██▄ █▄▀ ▄▄ █▄▄ ██▄ ▀▄▀ ██▄ █▄▄ 
       //  
       // returns the list for the correct level
-      calculate_selected_level(calc_level){
+      calculate_selected_level(calc_level, level, selected_code){
         //console.log('WORKING OUT LEVEL: ' + calc_level)
 
         // copys the description levels
-        let selected = JSON.parse(JSON.stringify(this.description_levels.level_2));
+        let selected = JSON.parse(JSON.stringify(level));
 
-        for(let [level, code] of this.selected_code.entries()){
+        for(let [level, code] of selected_code.entries()){
           
           // console.log('level: ' + level)
           // console.log('code: ' + code)
@@ -328,15 +354,15 @@ const app = Vue.createApp({
           // otherwise deals witht he prediction
           console.log("prediction: ")
           // not dealing with tags atm
-          // console.log(prediction.description_tag)
+          // console.log(prediction.code_tag)
 
           // console.log(prediction.selected_levels)
           // console.log(this.selected_code)
 
           // deals with prediction tag
-          if(prediction.description_tag != null){
+          if(prediction.code_tag != null){
             // have not tested this yet. unsure if working
-            this.description_tag = prediction.description_tag
+            this.code_tag = prediction.code_tag
           }
 
           // updates the selection code
@@ -466,6 +492,22 @@ const app = Vue.createApp({
         })
         .then((returned) => {
           this.description_levels.level_2 = returned.data; // assign the data to your state
+        })
+        .catch((error) => {
+          console.error(error); // log the error to the console
+          this.alert(error); // show an alert with the error message
+        });
+        
+      fetch("/data/level/3", {method:'GET'})
+        .then((response) => {
+          if (response.ok) { // if the status code is 200-299
+            return response.json(); // parse the response as JSON
+          } else {
+            throw new Error(response.statusText); // throw an error with the status text
+          }
+        })
+        .then((returned) => {
+          this.description_levels.level_3 = returned.data; // assign the data to your state
         })
         .catch((error) => {
           console.error(error); // log the error to the console
