@@ -88,10 +88,6 @@ const app = Vue.createApp({
         // for each level selected
         for(let level in this.selected_levels){
           
-          // adds a dash 
-          if(level == 1){
-            code += '='
-          }
 
           // if the level exists, and the level includes the seleceted value
           if(this.selected_levels[level] && Object.keys(this.selected_levels[level]).includes(this.selected_code[level])){
@@ -100,6 +96,10 @@ const app = Vue.createApp({
             code += this.selected_code[level]
           }else{
             break
+          }
+          // adds a dash 
+          if(level == 0){
+            code += '='
           }
         }
 
@@ -120,8 +120,8 @@ const app = Vue.createApp({
           }
         }
 
-        if(this.code_tag.name){
-          code += this.code_tag.name
+        if(this.code_tag.extra){
+          code += this.code_tag.extra
         }
         
         // returns code
@@ -458,6 +458,13 @@ const app = Vue.createApp({
             // have not tested this yet. unsure if working
             console.log('reading tag')
             console.log(prediction.code_tag)
+            // // if singel tag
+            // if(prediction.code_tag.selected_tag){
+            //   this.code_tag = {
+            //     selected_tag: [prediction.code_tag.selected_tag, prediction.code_tag.extra]
+            //     extra: null
+            //   }
+            // }
             this.code_tag = prediction.code_tag
           }
 

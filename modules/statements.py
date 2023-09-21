@@ -4,7 +4,7 @@ import traceback
 import os
 
 from .constants import *
-
+from difflib import SequenceMatcher
 
 __all__ = ['Statements']
     
@@ -78,6 +78,10 @@ class Statements:
             # return {'transaction': 'asdfasdf', 'prediction': "adsf"}, "no more transactions!", 206
         
         transaction = self.statments[account].iloc[transaction_number].to_dict()
+
+        if pd.isna(transaction['amount']) or (transaction['amount'] == 'nan'):
+            transaction['amount'] = 0
+
         prediction = self.predict_transaction(transaction)
         
         return {'transaction': transaction, 'prediction': prediction}, 'Found transaction', 200
@@ -112,7 +116,9 @@ class Statements:
             history = pd.read_csv(ROOT_DIR + HISTORIC_CLASSIFICATIONS,header=0)\
             
             print('history contains: ' + str(history.shape))
-            selected_history = history[history['description_full'] == transaction['description']]
+            selected_history = history[history['description_full'].apply(lambda x: is_same_transaction( x, transaction['description']))]
+
+
             print('matching history: ' + str(selected_history.shape))
             # print('matchin codes: ' + str(selected_history['code']))
             # print('mode of codes: ' + str(selected_history['code'].mode().values))
@@ -128,7 +134,9 @@ class Statements:
 
                 #
                 matching_values = selected_history[column].mode().values
-                if matching_values:
+                print(matching_values)
+
+                if len(matching_values):
                     
                     # selects the most common element
                     predicted[column] = matching_values[0]
@@ -137,7 +145,14 @@ class Statements:
                     if column == 'code':
                         code_half = predicted[column].split('=')[1].split('-')
                         predicted['selected_code'] = [predicted[column][0]] + [*(code_half[0])]
-                        predicted['code_tag'] = {'selected_tag': code_half[1][0],'extra': code_half[1][1:]} if len(code_half) > 1 else None # {'selected_tag':None,'name': None}
+
+                        if len(code_half) > 1:
+                            if code_half[1][0] in ['l','t']:
+                                predicted['code_tag'] = {'selected_tag': [code_half[1][0]],'extra': code_half[1][1:]} # {'selected_tag':None,'name': None}
+                            else:
+                                predicted['code_tag'] = {'selected_tag': [*(code_half[1])], 'extra': None}
+                        else:
+                            predicted['code_tag'] = None
 
             
             # sets output, adds null if no data
@@ -277,3 +292,12 @@ class Statements:
             traceback.print_exc()
             return -1
 
+def is_same_transaction(existing, target):
+
+    ratio_threshold = 0.65
+    if (target[0:8] == 'Transfer') or (existing[0:8] == 'Transfer'):
+        ratio_threshold = 0.65
+
+
+    # print(SequenceMatcher(None, existing, target).ratio())
+    return SequenceMatcher(None, existing, target).ratio() > ratio_threshold
