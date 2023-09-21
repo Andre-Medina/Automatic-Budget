@@ -56,7 +56,10 @@ Vue.js Landing Page
                             </div>
                         </div> 
                         <div class="4u">
-
+                            a
+                        </div> 
+                        <div class="4u">
+                            <a class="button fit" @click="reset('all')">reset</a>
                         </div> 
                     </div>
                     <br>
@@ -156,7 +159,7 @@ Vue.js Landing Page
                                 <li v-if="description_levels.level_3"  v-for="level_index in (tag_level_depth)">
                                     <div v-if="tag_selected_levels[level_index - 1] && (Object.keys(tag_selected_levels[level_index - 1]).length > 0)" class="select-wrapper">
                                         <select name="category" id="category" v-model="code_tag.selected_tag[level_index - 1]" @change="set_description($event.target.value, level_index - 1, true)">
-                                            <option>-</option>
+                                            <option :value="null">-</option>
                                             <option v-for="code in Object.keys(tag_selected_levels[level_index - 1])" :value="code" key="code">[[code]] - [[tag_selected_levels[level_index - 1][code].description]]</option>
                                         </select>
                                     </div>
