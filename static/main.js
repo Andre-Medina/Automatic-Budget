@@ -102,9 +102,31 @@ const app = Vue.createApp({
             break
           }
         }
+
+        console.log(this.code_tag.selected_tag[0])
+        if(this.code_tag.selected_tag[0] && this.code_tag.selected_tag[0] != '-'){
+          code += '-'
+
+          for(let level in this.tag_selected_levels){
+
+            // if the level exists, and the level includes the seleceted value
+            if(this.tag_selected_levels[level] && Object.keys(this.tag_selected_levels[level]).includes(this.code_tag.selected_tag[level])){
+
+              // adds it, otherwise breaks
+              code += this.code_tag.selected_tag[level]
+            }else{
+              break
+            }
+          }
+        }
+
+        if(this.code_tag.name){
+          code += this.code_tag.name
+        }
         
         // returns code
         console.log(code)
+
         return code
       },
 
@@ -118,7 +140,6 @@ const app = Vue.createApp({
         this.commit_message = ""
         this.are_you_sure_flag = false
 
-        this.$router.push({query: {transaction_index: this.transaction_index}})
         // this.push({query: { plan: 'private' }})
 
         //update are you sure
@@ -349,7 +370,7 @@ const app = Vue.createApp({
       //  █▀▄ ██▄ ▄█ ██▄  █  ▄▄ █▄▄ █▄█ █▄▀ ██▄ 
       //  
       // resets code
-      reset(what = 'all'){
+      reset(what = 'choices'){
         switch (what) {
           case 'code':
             this.selected_code = [null]
@@ -361,10 +382,24 @@ const app = Vue.createApp({
             this.code_tag = {selected_tag: [null], extra: null}
             break;
 
+          case 'index':
+            this.transaction_index = 0
+            this.current_transaction = null
+            break;
+            
+          case 'account':
+            this.current_account = null;
+            break;
+
           case 'all':
+            this.reset('index')
+            this.reset('account')
+
+          case 'choices':
             this.reset('tag')
             this.reset('code')
             break;
+
 
           default:
             break;
@@ -624,8 +659,96 @@ const app = Vue.createApp({
       //  
       // console.log(movement_types)
       
-    },
+      
     
+      //  █▀█ █▀▀ ▄▀█ █▀▄ █ █▄ █ █▀▀   █▀█ ▄▀█ █▀█ ▄▀█ █▀▄▀█   █ █ ▄▀█ █▀█ █▀ 
+      //  █▀▄ ██▄ █▀█ █▄▀ █ █ ▀█ █▄█   █▀▀ █▀█ █▀▄ █▀█ █ ▀ █   ▀▄▀ █▀█ █▀▄ ▄█ 
+      //
+        // onMounted() {
+          // async () => {
+            // console.log("READING PARAMS")
+            // await this.$router.isReady();
+            // console.log("READY")
+            // console.log(this.$router.currentRoute.value);  // all values have been initialized now
+      console.log('before');
+      var x = async () => {
+        await this.$router.isReady();
+        console.log('UPDATING FROM ROUTE PARAMS')
+        console.log(this.$route.query)
+        // this.code_tag = JSON.parse(decodeURIComponent(this.$route.query.code_tag));
+        // this.selected_code = JSON.parse(decodeURIComponent(this.$route.query.selected_code));
+        // if(this.$route.query.description_short){
+        //   console.log(this.$route.query.description_short)
+        //   this.short_description = decodeURIComponent(this.$route.query.description_short);
+        // }
+        // this.current_movement_type = decodeURIComponent(this.$route.query.current_movement_type);
+        var temp
+
+        temp = decodeURIComponent(this.$route.query.transaction_index)
+        if(!isNaN(temp)){
+          console.log('found index: ' + temp)
+          this.transaction_index = parseInt(temp);
+        }else{
+          console.log('could not find index: ' + temp +', resetting')
+          this.reset('index')
+        }
+
+        temp = decodeURIComponent(this.$route.query.current_account)
+        if(!(temp == null)){   // && Object.keys(this.account_names).includes(temp)
+          console.log('found account: ' + temp)
+          this.current_account = temp;
+        }else{
+          console.log('could not find account: ' + temp +', resetting')
+          this.reset('account')
+        }
+        
+      };
+      x()
+      console.log('after');
+
+    },
+        
+    //  ██    ██ ██████  ██████   █████  ████████ ███████ ██████  
+    //  ██    ██ ██   ██ ██   ██ ██   ██    ██    ██      ██   ██ 
+    //  ██    ██ ██████  ██   ██ ███████    ██    █████   ██   ██ 
+    //  ██    ██ ██      ██   ██ ██   ██    ██    ██      ██   ██ 
+    //   ██████  ██      ██████  ██   ██    ██    ███████ ██████  
+    //  
+    updated(){
+      
+      //  █ █ █▀█ █▀▄ ▄▀█ ▀█▀ █ █▄ █ █▀▀   █▀█ ▄▀█ █▀█ ▄▀█ █▀▄▀█   █▀█ █ █ █▀▀ █▀█ █▄█ 
+      //  █▄█ █▀▀ █▄▀ █▀█  █  █ █ ▀█ █▄█   █▀▀ █▀█ █▀▄ █▀█ █ ▀ █   ▀▀█ █▄█ ██▄ █▀▄  █  
+      //  
+      // var query = {}
+      //
+      // query['transaction_index'] = encodeURIComponent(this.transaction_index)
+      //
+      // if(this.code_tag.selected_tag[0] && this.code_tag.selected_tag[0]){
+      //   // have not tested this yet. unsure if working
+      //   query['code_tag'] = encodeURIComponent(JSON.stringify(this.code_tag))
+      // }
+      // 
+      // updates the selection code
+      // if(this.selected_code != null){
+      //   query['selected_code'] = encodeURIComponent(JSON.stringify(this.selected_code))
+      // }
+      // updates the short_description
+      // query['description_short'] = encodeURIComponent(this.short_description)
+      //
+      // updates movement
+      // query['current_movement_type'] = encodeURIComponent(this.current_movement_type)
+      
+
+      this.$router.push({query: {
+        transaction_index: encodeURIComponent(this.transaction_index),
+        // code_tag: encodeURIComponent(JSON.stringify(this.code_tag)),
+        // selected_code: encodeURIComponent(JSON.stringify(this.selected_code)),
+        // description_short: encodeURIComponent(this.short_description),
+        // current_movement_type: encodeURIComponent(this.current_movement_type),
+        current_account: encodeURIComponent(this.current_account),
+        } //query
+      });
+    },
 
   });
 
@@ -640,24 +763,11 @@ const app = Vue.createApp({
   // Mount it to an element with id="app"
 app.config.compilerOptions.delimiters = ['[[', ']]'];
 
-// 1. Define route components.
-// These can be imported from other files
-const Home = { template: '<div>Home</div>' }
-const About = { template: '<div>About</div>' }
-
-// 2. Define some routes
-// Each route should map to a component.
-// We'll talk about nested routes later.
 const routes = [
-  { path: '/', component: Home },
-  { path: '/about', component: About },
+  { path: '', component: { template: 'Home' }, props: (route) => ({ transaction_index: route.query.transaction_index }) },
 ]
-
-// 3. Create the router instance and pass the `routes` option
-// You can pass in additional options here, but let's
-// keep it simple for now.
 const router = VueRouter.createRouter({
-  // 4. Provide the history implementation to use. We are using the hash history for simplicity here.
+  mode: 'history', // add 'history' mode
   history: VueRouter.createWebHashHistory(),
   routes, // short for `routes: routes`
 })
@@ -669,7 +779,7 @@ app.mount('#app');
 console.log("This is a message"); // Print a string
 console.log(app); // Print a data property from vue instance
 console.log(app.result_1, app.result_2, app.result_3); // Print multiple data properties from vue instance
-
+console.log(app.$route)
 console.log('starting mounted')
 
 
