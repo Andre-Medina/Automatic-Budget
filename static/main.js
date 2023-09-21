@@ -29,13 +29,15 @@ const app = Vue.createApp({
         // description
         description_levels: {
           level1: null,
-          level2: null
+          level2: null,
+          level3: null
         },
         selected_code: [null],
         selected_levels: [null],
         
         // tags
-        description_tag: {tag: null, name: null},
+        code_tag: {selected_tag: [null], extra: null},
+        tag_selected_levels: [null],
 
         // transactions
         transaction_index: 0,
@@ -49,7 +51,9 @@ const app = Vue.createApp({
       };
     },
 
-    
+    // routes: [
+    //   {path: ''}
+    // ],
     //   ██████╗  ██████╗  ███╗   ███╗ ██████╗  ██╗   ██╗ ████████╗ ███████╗ ██████╗  
     //  ██╔════╝ ██╔═══██╗ ████╗ ████║ ██╔══██╗ ██║   ██║ ╚══██╔══╝ ██╔════╝ ██╔══██╗ 
     //  ██║      ██║   ██║ ██╔████╔██║ ██████╔╝ ██║   ██║    ██║    █████╗   ██║  ██║ 
@@ -64,6 +68,16 @@ const app = Vue.createApp({
         console.log('Depth is now ' + this.selected_code.length)
         return this.selected_code.length
       },
+
+      tag_level_depth(){
+        console.log("calcing tag level depth:")
+        console.log(this.code_tag)
+        console.log(this.code_tag.selected_tag)
+        console.log(this.tag_selected_levels[0])
+        console.log(Object.keys(this.tag_selected_levels[0]).length > 0)
+        console.log('Tag depth is now' + this.code_tag.selected_tag.length)
+        return this.code_tag.selected_tag.length
+      },
       
       // calculates level code
       calculate_initial_code(){
@@ -74,10 +88,6 @@ const app = Vue.createApp({
         // for each level selected
         for(let level in this.selected_levels){
           
-          // adds a dash 
-          if(level == 1){
-            code += '='
-          }
 
           // if the level exists, and the level includes the seleceted value
           if(this.selected_levels[level] && Object.keys(this.selected_levels[level]).includes(this.selected_code[level])){
@@ -87,10 +97,36 @@ const app = Vue.createApp({
           }else{
             break
           }
+          // adds a dash 
+          if(level == 0){
+            code += '='
+          }
+        }
+
+        console.log(this.code_tag.selected_tag[0])
+        if(this.code_tag.selected_tag[0] && this.code_tag.selected_tag[0] != '-'){
+          code += '-'
+
+          for(let level in this.tag_selected_levels){
+
+            // if the level exists, and the level includes the seleceted value
+            if(this.tag_selected_levels[level] && Object.keys(this.tag_selected_levels[level]).includes(this.code_tag.selected_tag[level])){
+
+              // adds it, otherwise breaks
+              code += this.code_tag.selected_tag[level]
+            }else{
+              break
+            }
+          }
+        }
+
+        if(this.code_tag.extra){
+          code += this.code_tag.extra
         }
         
         // returns code
         console.log(code)
+
         return code
       },
 
@@ -99,10 +135,13 @@ const app = Vue.createApp({
       //  
       // calculates current transaction
       async get_current_transaction(){
-        this.reset_code()
+        this.reset()
         this.short_description = ""
         this.commit_message = ""
         this.are_you_sure_flag = false
+
+        // this.push({query: { plan: 'private' }})
+
         //update are you sure
         if(this.current_account){
           try{
@@ -192,7 +231,7 @@ const app = Vue.createApp({
       },
       
       change_account(account){
-        this.reset_code()
+        this.reset()
         this.current_account = account
       },
 
@@ -205,33 +244,82 @@ const app = Vue.createApp({
       //  ▄█ ██▄  █  ▄▄ █▄▀ ██▄ ▄█ █▄▄ █▀▄ █ █▀▀  █  █ █▄█ █ ▀█ 
       //  
       // sets the desction to selected code
-      set_description(code, level){
+      set_description(code, level, tag = false){
+
+        var selected_code
+
+        if (tag){
+          console.log('calculating for tag')
+          selected_code = this.code_tag.selected_tag
+        }else{
+          console.log('calculating for normal')
+          selected_code = this.selected_code
+        }
+
         console.log('setting ' + level + " to a code of " + code);
-        while(this.selected_code.length < level + 2){
-          this.selected_levels.push(null)
-          this.selected_code.push(null)
+        while(selected_code.length < level + 2){
+          // selected_levels.push(null)
+          selected_code.push(null)
         }
         // console.log('selected levels is \\\|/')
-        // console.log(this.selected_levels)
-        // console.log(this.selected_levels[level])
+        // console.log(selected_levels)
+        // console.log(selected_levels[level])
         
-        this.selected_code[level] = code
+        selected_code[level] = code
 
         console.log('selected code is \\\|/')
-        console.log(this.selected_code)
+        console.log(selected_code)
 
-        this.calculate_selected_levels_all(level)
+        this.update_selected_levels(tag, level)
 
         console.log('selected levels is \\\|/')
-        console.log(this.selected_levels)
-
+        if (tag){
+          this.code_tag.selected_tag = selected_code
+          console.log(this.code_tag.selected_tag)
+          console.log(this.tag_selected_levels)
+        }else{
+          this.selected_code = selected_code
+          console.log(this.selected_code)
+          console.log(this.selected_levels)
+        }
       },
 
-      calculate_selected_levels_all(min_level = 0){
+      update_selected_levels(tag = false, min_level = 0){
+        var selected_levels
+        var description_levels
+        var selected_code
 
-        for(let recalc_level = min_level + 1; recalc_level < this.selected_code.length; recalc_level ++){
+        if (tag){
+          selected_levels = this.tag_selected_levels
+          description_levels = this.description_levels.level_3
+          selected_code = this.code_tag.selected_tag
+        }else{
+          selected_levels = this.selected_levels
+          description_levels = this.description_levels.level_2
+          selected_code = this.selected_code
+        }
+
+        this.calculate_selected_levels_all(min_level, selected_code, selected_levels, description_levels, tag)
+
+        if (tag){
+          this.code_tag.selected_tag = selected_code
+          this.tag_selected_levels = selected_levels
+        }else{
+          this.selected_levels = selected_levels
+          this.selected_code = selected_code
+        }
+      },
+
+      calculate_selected_levels_all(min_level = 0, selected_code, selected_levels, description_levels, tag = false){
+
+        for(let recalc_level = min_level + 1; recalc_level < selected_code.length; recalc_level ++){
           // console.log('calculating levels for ' + recalc_level)
-          this.selected_levels[recalc_level] = this.calculate_selected_level(recalc_level)
+          selected_levels[recalc_level] = this.calculate_selected_level(
+            recalc_level, 
+            description_levels, 
+            selected_code,
+            tag
+            )
         }
       },
 
@@ -239,13 +327,13 @@ const app = Vue.createApp({
       //  █▄▄ █▀█ █▄▄ █▄▄ █▄█ █▄▄ █▀█  █  ██▄ ▄▄ ▄█ ██▄ █▄▄ ██▄ █▄▄  █  ██▄ █▄▀ ▄▄ █▄▄ ██▄ ▀▄▀ ██▄ █▄▄ 
       //  
       // returns the list for the correct level
-      calculate_selected_level(calc_level){
+      calculate_selected_level(calc_level, level, selected_code, tag = false){
         //console.log('WORKING OUT LEVEL: ' + calc_level)
 
         // copys the description levels
-        let selected = JSON.parse(JSON.stringify(this.description_levels.level_2));
+        let selected = JSON.parse(JSON.stringify(level));
 
-        for(let [level, code] of this.selected_code.entries()){
+        for(let [level, code] of selected_code.entries()){
           
           // console.log('level: ' + level)
           // console.log('code: ' + code)
@@ -255,7 +343,7 @@ const app = Vue.createApp({
             break
           }
           // if the level is root, skips
-          if(level == 0){
+          if((level == 0) && (!tag)){
             continue
           }
           // if the level is greater than whats needed, skips it
@@ -282,9 +370,41 @@ const app = Vue.createApp({
       //  █▀▄ ██▄ ▄█ ██▄  █  ▄▄ █▄▄ █▄█ █▄▀ ██▄ 
       //  
       // resets code
-      reset_code(){
-        this.selected_code = [null]
-        this.selected_levels = [this.description_levels.level_1]
+      reset(what = 'choices'){
+        switch (what) {
+          case 'code':
+            this.selected_code = [null]
+            this.selected_levels = [this.description_levels.level_1]
+            break;
+        
+          case 'tag':
+            this.tag_selected_levels = [this.description_levels.level_3]
+            this.code_tag = {selected_tag: [null], extra: null}
+            break;
+
+          case 'index':
+            this.transaction_index = 0
+            this.current_transaction = null
+            break;
+            
+          case 'account':
+            this.current_account = null;
+            break;
+
+          case 'all':
+            this.reset('index')
+            this.reset('account')
+
+          case 'choices':
+            this.reset('tag')
+            this.reset('code')
+            break;
+
+
+          default:
+            break;
+        }
+
       },
 
       //  ▀▀█▀▀ █▀▀▀▄ ▄▀▀▀▄ █▄    █ ▄▀▀▀▀ ▄▀▀▀▄ ▄▀▀▀ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
@@ -328,22 +448,31 @@ const app = Vue.createApp({
           // otherwise deals witht he prediction
           console.log("prediction: ")
           // not dealing with tags atm
-          // console.log(prediction.description_tag)
+          // console.log(prediction.code_tag)
 
           // console.log(prediction.selected_levels)
           // console.log(this.selected_code)
 
           // deals with prediction tag
-          if(prediction.description_tag != null){
+          if(prediction.code_tag != null){
             // have not tested this yet. unsure if working
-            this.description_tag = prediction.description_tag
+            console.log('reading tag')
+            console.log(prediction.code_tag)
+            // // if singel tag
+            // if(prediction.code_tag.selected_tag){
+            //   this.code_tag = {
+            //     selected_tag: [prediction.code_tag.selected_tag, prediction.code_tag.extra]
+            //     extra: null
+            //   }
+            // }
+            this.code_tag = prediction.code_tag
           }
 
           // updates the selection code
           if(prediction.selected_code != null){
             this.selected_code = prediction.selected_code.map(word => word.toLowerCase());
           }else{
-            this.reset_code()
+            this.reset()
           }
 
           // updates the short_description
@@ -368,7 +497,8 @@ const app = Vue.createApp({
           // current_movement_type
           
           // recalculates the selected levels due to changing data
-          this.calculate_selected_levels_all()
+          this.update_selected_levels(false)
+          this.update_selected_levels(true)
         }
 
 
@@ -471,6 +601,25 @@ const app = Vue.createApp({
           console.error(error); // log the error to the console
           this.alert(error); // show an alert with the error message
         });
+        
+      fetch("/data/level/3", {method:'GET'})
+        .then((response) => {
+          if (response.ok) { // if the status code is 200-299
+            return response.json(); // parse the response as JSON
+          } else {
+            throw new Error(response.statusText); // throw an error with the status text
+          }
+        })
+        .then((returned) => {
+          this.description_levels.level_3 = returned.data; // assign the data to your state
+          this.tag_selected_levels[0] = this.description_levels.level_3;
+          console.log('tag selected levels:')
+          console.log(this.tag_selected_levels)
+        })
+        .catch((error) => {
+          console.error(error); // log the error to the console
+          this.alert(error); // show an alert with the error message
+        });
 
 
       //  █▀ ▀█▀ ▄▀█ ▀█▀ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀   ▄▀█ █▀▀ █▀▀ █▀█ █ █ █▄ █ ▀█▀ █▀ 
@@ -517,8 +666,96 @@ const app = Vue.createApp({
       //  
       // console.log(movement_types)
       
-    },
+      
     
+      //  █▀█ █▀▀ ▄▀█ █▀▄ █ █▄ █ █▀▀   █▀█ ▄▀█ █▀█ ▄▀█ █▀▄▀█   █ █ ▄▀█ █▀█ █▀ 
+      //  █▀▄ ██▄ █▀█ █▄▀ █ █ ▀█ █▄█   █▀▀ █▀█ █▀▄ █▀█ █ ▀ █   ▀▄▀ █▀█ █▀▄ ▄█ 
+      //
+        // onMounted() {
+          // async () => {
+            // console.log("READING PARAMS")
+            // await this.$router.isReady();
+            // console.log("READY")
+            // console.log(this.$router.currentRoute.value);  // all values have been initialized now
+      console.log('before');
+      var x = async () => {
+        await this.$router.isReady();
+        console.log('UPDATING FROM ROUTE PARAMS')
+        console.log(this.$route.query)
+        // this.code_tag = JSON.parse(decodeURIComponent(this.$route.query.code_tag));
+        // this.selected_code = JSON.parse(decodeURIComponent(this.$route.query.selected_code));
+        // if(this.$route.query.description_short){
+        //   console.log(this.$route.query.description_short)
+        //   this.short_description = decodeURIComponent(this.$route.query.description_short);
+        // }
+        // this.current_movement_type = decodeURIComponent(this.$route.query.current_movement_type);
+        var temp
+
+        temp = decodeURIComponent(this.$route.query.transaction_index)
+        if(!isNaN(temp)){
+          console.log('found index: ' + temp)
+          this.transaction_index = parseInt(temp);
+        }else{
+          console.log('could not find index: ' + temp +', resetting')
+          this.reset('index')
+        }
+
+        temp = decodeURIComponent(this.$route.query.current_account)
+        if(!(temp == null)){   // && Object.keys(this.account_names).includes(temp)
+          console.log('found account: ' + temp)
+          this.current_account = temp;
+        }else{
+          console.log('could not find account: ' + temp +', resetting')
+          this.reset('account')
+        }
+        
+      };
+      x()
+      console.log('after');
+
+    },
+        
+    //  ██    ██ ██████  ██████   █████  ████████ ███████ ██████  
+    //  ██    ██ ██   ██ ██   ██ ██   ██    ██    ██      ██   ██ 
+    //  ██    ██ ██████  ██   ██ ███████    ██    █████   ██   ██ 
+    //  ██    ██ ██      ██   ██ ██   ██    ██    ██      ██   ██ 
+    //   ██████  ██      ██████  ██   ██    ██    ███████ ██████  
+    //  
+    updated(){
+      
+      //  █ █ █▀█ █▀▄ ▄▀█ ▀█▀ █ █▄ █ █▀▀   █▀█ ▄▀█ █▀█ ▄▀█ █▀▄▀█   █▀█ █ █ █▀▀ █▀█ █▄█ 
+      //  █▄█ █▀▀ █▄▀ █▀█  █  █ █ ▀█ █▄█   █▀▀ █▀█ █▀▄ █▀█ █ ▀ █   ▀▀█ █▄█ ██▄ █▀▄  █  
+      //  
+      // var query = {}
+      //
+      // query['transaction_index'] = encodeURIComponent(this.transaction_index)
+      //
+      // if(this.code_tag.selected_tag[0] && this.code_tag.selected_tag[0]){
+      //   // have not tested this yet. unsure if working
+      //   query['code_tag'] = encodeURIComponent(JSON.stringify(this.code_tag))
+      // }
+      // 
+      // updates the selection code
+      // if(this.selected_code != null){
+      //   query['selected_code'] = encodeURIComponent(JSON.stringify(this.selected_code))
+      // }
+      // updates the short_description
+      // query['description_short'] = encodeURIComponent(this.short_description)
+      //
+      // updates movement
+      // query['current_movement_type'] = encodeURIComponent(this.current_movement_type)
+      
+
+      this.$router.push({query: {
+        transaction_index: encodeURIComponent(this.transaction_index),
+        // code_tag: encodeURIComponent(JSON.stringify(this.code_tag)),
+        // selected_code: encodeURIComponent(JSON.stringify(this.selected_code)),
+        // description_short: encodeURIComponent(this.short_description),
+        // current_movement_type: encodeURIComponent(this.current_movement_type),
+        current_account: encodeURIComponent(this.current_account),
+        } //query
+      });
+    },
 
   });
 
@@ -532,13 +769,24 @@ const app = Vue.createApp({
 //  
   // Mount it to an element with id="app"
 app.config.compilerOptions.delimiters = ['[[', ']]'];
+
+const routes = [
+  { path: '', component: { template: 'Home' }, props: (route) => ({ transaction_index: route.query.transaction_index }) },
+]
+const router = VueRouter.createRouter({
+  mode: 'history', // add 'history' mode
+  history: VueRouter.createWebHashHistory(),
+  routes, // short for `routes: routes`
+})
+app.use(router)
+
 app.mount('#app');
 
 // Print to console
 console.log("This is a message"); // Print a string
 console.log(app); // Print a data property from vue instance
 console.log(app.result_1, app.result_2, app.result_3); // Print multiple data properties from vue instance
-
+console.log(app.$route)
 console.log('starting mounted')
 
 

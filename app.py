@@ -98,6 +98,11 @@ def get_data(data_type, extra):
                 response_object["message"] = 'success'
                 response_object['status'] = 200
 
+            elif extra == "3":
+                response_object['data'] = md.json_read(ROOT_DIR + md.CLASSIFICATION_JSON_DIR_LVL_3)
+                response_object["message"] = 'success'
+                response_object['status'] = 200
+
 
         #  █▀ ▀█▀ ▄▀█ ▀█▀ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀ 
         #  ▄█  █  █▀█  █  ██▄ █ ▀ █ ██▄ █ ▀█  █  
