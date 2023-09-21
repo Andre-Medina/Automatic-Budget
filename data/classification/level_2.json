@@ -60,6 +60,10 @@
                     "r": {
                         "description": "KFC/ Red rooster",
                         "next": {}
+                    },
+                    "e": {
+                        "description": "African",
+                        "next": {}
                     }
                 }
             },
