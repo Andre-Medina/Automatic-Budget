@@ -130,7 +130,7 @@ class Statements:
                     
 
             predicted = {}
-            for column in ['code','movement','description_short']:
+            for column in ['code','movement','description_short','transfer_account']:
 
                 #
                 matching_values = selected_history[column].mode().values
@@ -157,7 +157,7 @@ class Statements:
             
             # sets output, adds null if no data
             prediction = {}
-            for parameter in ['code_tag','selected_code','description_short','movement']:
+            for parameter in ['code_tag','selected_code','description_short','movement','transfer_account']:
                 prediction[parameter] = predicted[parameter] if parameter in predicted else None
 
             return prediction
@@ -276,9 +276,21 @@ class Statements:
             # converts full name to short hand
             data['where'] = ALL_ACCOUNT_LIKE[data['where']]
 
-            # saves data
-            transactions.loc[len(transactions)] = [(data[key] if key in data else '') for key in SAVED_TRANSACTION_COLUMNS]
-
+            insert_data = []
+            for i in range(max(len(SAVED_TRANSACTION_COLUMNS), len(SAVED_TRANSACTION_COLUMNS_TRANSFER))):
+                if i < len( (SAVED_TRANSACTION_COLUMNS if data['movement'] != 'transfer' else SAVED_TRANSACTION_COLUMNS_TRANSFER) ):
+                    key = (SAVED_TRANSACTION_COLUMNS if data['movement'] != 'transfer' else SAVED_TRANSACTION_COLUMNS_TRANSFER)[i]
+                    insert_data.append(data[key] if key in data else "")
+                else:
+                    insert_data.append("")
+                
+            # inserts the data
+            transactions.loc[len(transactions)] = insert_data
+            # if data['movement'] != 'transfer':
+            #     # saves data
+            #     transactions.loc[len(transactions)] = [(data[key] if key in data else '') for key in SAVED_TRANSACTION_COLUMNS]
+            # else:
+            #     transactions.loc[len(transactions)] = [(data[key] if key in data else '') for key in SAVED_TRANSACTION_COLUMNS_TRANSFER]
 
             transactions\
                 .sort_values(
@@ -297,6 +309,13 @@ def is_same_transaction(existing, target):
     ratio_threshold = 0.65
     if (target[0:8] == 'Transfer') or (existing[0:8] == 'Transfer'):
         ratio_threshold = 0.65
+
+    if (
+        (('Transfer from Andre Medina' == existing[0:26]) and ('Transfer to Andre Medina' == target[0:24])) or
+        (('Transfer from Andre Medina' == target[0:26]) and ('Transfer to Andre Medina' == existing[0:24]))
+    ):
+        ratio_threshold = 0.99
+        
 
 
     # print(SequenceMatcher(None, existing, target).ratio())

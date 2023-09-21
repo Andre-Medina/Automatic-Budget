@@ -19,6 +19,7 @@ const app = Vue.createApp({
         // general
         temp_alert: "",
         show_alert: false,
+        null: null,
 
         // accounts
         account_names: null,
@@ -38,6 +39,10 @@ const app = Vue.createApp({
         // tags
         code_tag: {selected_tag: [null], extra: null},
         tag_selected_levels: [null],
+
+        // transfer
+        transfer_account: null,
+        transfer_account_extra: "",
 
         // transactions
         transaction_index: 0,
@@ -386,17 +391,33 @@ const app = Vue.createApp({
             this.transaction_index = 0
             this.current_transaction = null
             break;
+          
+          case 'description':
+            this.short_description = ""
+            break;
+
+          case 'movement':
+            this.current_movement_type = null
+            break;
             
           case 'account':
             this.current_account = null;
+            break;
+          
+          case 'transfer':
+            this.transfer_account = null;
+            this.transfer_account_extra = "";
             break;
 
           case 'all':
             this.reset('index')
             this.reset('account')
+            this.reset('movement')
 
           case 'choices':
             this.reset('tag')
+            this.reset('transfer')
+            this.reset('description')
             this.reset('code')
             break;
 
@@ -479,14 +500,21 @@ const app = Vue.createApp({
           if(prediction.description_short != null){
             this.short_description = prediction.description_short;
           }else{
-            this.short_description = ""
+            this.reset('description')
           }
           
           // updates movement
           if(prediction.movement != null){
             this.current_movement_type = prediction.movement
           }else{
-            this.current_movement_type = null
+            this.reset('movement')
+          }
+          
+          // transfer account
+          if(prediction.transfer_account != null){
+            this.transfer_account = Object.keys(this.account_names).find(key => this.account_names[key] == prediction.transfer_account)
+          }else{
+            this.reset('transfer')
           }
           
 
@@ -510,9 +538,15 @@ const app = Vue.createApp({
         
         if(!are_you_sure){
           if(
+            
             this.current_transaction == null | 
             this.current_movement_type == null | 
-            this.selected_code[0] == null 
+            this.current_movement_type == 'transfer' ?
+            (
+              this.transfer_account == null
+            ) : (
+              this.selected_code[0] == null 
+            ) 
             ){
               this.are_you_sure_flag = true
               return
@@ -529,12 +563,13 @@ const app = Vue.createApp({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ 
                 movement: this.current_movement_type,
-                amount: clean_price(this.current_transaction.amount), 
+                amount: clean_price(this.current_transaction.amount) * (this.current_movement_type == 'output' ? -1: 1), 
                 where: this.current_account, 
-                code: this.calculate_initial_code,
                 description_short: this.short_description,
                 description_full: this.current_transaction.description,
-                date: this.current_transaction.date              
+                date: this.current_transaction.date,
+                code:             this.current_movement_type != 'transfer'? this.calculate_initial_code : null,
+                transfer_account: this.current_movement_type != 'transfer'? null : (this.account_names[this.transfer_account] + this.transfer_account_extra),
               })            
             })
             .then((response) => {

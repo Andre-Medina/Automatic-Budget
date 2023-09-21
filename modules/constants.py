@@ -37,6 +37,9 @@ STATEMENT_ACCOUNTS = {
     'blue_card': 'be',
     'green_card': 'br',
     'input': 'bs',
+    'savings': 'bb',
+    'holiday': 'bh',
+    'outings': 'bo',
   }
 
 ALL_ACCOUNT_LIKE = STATEMENT_ACCOUNTS | {
@@ -49,10 +52,11 @@ ALL_ACCOUNT_LIKE = STATEMENT_ACCOUNTS | {
 MOVEMENT_TYPES = ['input','output','transfer','work']
 
 
-SAVED_TRANSACTION_COLUMNS = ['movement','amount','change','total','tax','where','code','description_short','date']
-SAVED_TRANSACTION_COLUMNS_NEEDED = ['movement','amount','where','code','description_short','date']
-SAVED_CLASSIFICATION_COLUMNS_NEEDED = ['movement','date','where','description_full','code','description_short']
-SAVED_CLASSIFICATION_COLUMNS = ['movement','date','where','description_full','code','description_short','submitted_date']
+SAVED_TRANSACTION_COLUMNS =          ['movement',    'amount',   'change',   'total' ,           'tax',                  'where',   'code',  'description_short',    'date']
+SAVED_TRANSACTION_COLUMNS_TRANSFER = ['movement',    'total',    'where',    'transfer_account', 'description_short',    'date']
+SAVED_TRANSACTION_COLUMNS_NEEDED = ['movement','amount','where','code','description_short','date','transfer_account']
+SAVED_CLASSIFICATION_COLUMNS_NEEDED = ['movement','date','where','description_full','code','description_short','transfer_account']
+SAVED_CLASSIFICATION_COLUMNS = ['movement','date','where','description_full','code','description_short','submitted_date','transfer_account']
 
 
 
