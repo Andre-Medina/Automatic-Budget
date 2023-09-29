@@ -53,7 +53,7 @@ const app = Vue.createApp({
         // commiting
         new_data: false,
         commit_message: "",
-        are_you_sure_flag: null,
+        are_you_sure_message: ""
       };
     },
 
@@ -142,9 +142,7 @@ const app = Vue.createApp({
       // calculates current transaction
       async get_current_transaction(){
         this.reset()
-        this.short_description = ""
-        this.commit_message = ""
-        this.are_you_sure_flag = false
+        
 
         // this.push({query: { plan: 'private' }})
 
@@ -230,12 +228,6 @@ const app = Vue.createApp({
         this.result_1 = value;
       },
 
-      
-      update_are_you_sure(){
-        console.log(this.are_you_sure_flag)
-        this.are_you_sure_flag = false
-        return this.are_you_sure_flag
-      },
       
       change_account(account){
         this.reset()
@@ -379,9 +371,16 @@ const app = Vue.createApp({
       // resets code
       reset(what = 'choices'){
         switch (what) {
+          case 'are_you_sure':
+            this.are_you_sure_message = ""
+            this.commit_message = ""
+            break;
+
           case 'code':
+            console.log('resetting code')
             this.selected_code = [null]
             this.selected_levels = [this.description_levels.level_1]
+            console.log('done')
             break;
         
           case 'tag':
@@ -391,6 +390,7 @@ const app = Vue.createApp({
 
           case 'index':
             this.transaction_index = 0
+            this.commit_message = ""
             this.transaction_classified = false
             this.current_transaction = null
             break;
@@ -418,6 +418,7 @@ const app = Vue.createApp({
             this.reset('movement')
 
           case 'choices':
+            this.reset('are_you_sure')
             this.reset('tag')
             this.reset('transfer')
             this.reset('description')
@@ -539,24 +540,53 @@ const app = Vue.createApp({
       //  
       submit_transaction(are_you_sure = false){
         
+        // resets are you sure
+        this.reset('are_you_sure')
+
+        // if not sure
         if(!are_you_sure){
-          if(
-            
-            this.current_transaction == null | 
-            this.current_movement_type == null | 
-            this.current_movement_type == 'transfer' ?
-            (
-              this.transfer_account == null
-            ) : (
-              this.selected_code[0] == null 
-            ) 
-            ){
-              this.are_you_sure_flag = true
-              return
+
+          // checking description
+          if(this.short_description == ""){
+            this.are_you_sure_message += " There is no description."
+          }
+
+          // checking if it was classfied already
+          if(this.transaction_classified){
+            this.are_you_sure_message += " This transaction has already been classified."
+          }
+          
+          // checking current transaction
+          if(this.current_transaction == null){
+            this.are_you_sure_message += " There is no transaction"
+          }
+
+          // checking movement type
+          if(this.current_movement_type == null){
+            this.are_you_sure_message += " There is no movement type"
+          }
+          if(this.current_movement_type == 'transfer'){
+            console.log('checking transfer')
+
+            // its transfering so checking transfer account
+            if(this.transfer_account == null){
+              console.log('missing transfer')
+              this.are_you_sure_message += " There is no transfer account specified"
+            }
+          }else{
+
+            // its not transferring so checking code
+            if(this.selected_code[0] == null){
+              this.are_you_sure_message += " There is no code selected"
+            }
+          }
+          
+          // if anything was missing, returns
+          if(this.are_you_sure_message != ""){
+            return
           }
         }
-        this.are_you_sure_flag = null
-
+        
 
         if(this.current_account){
           fetch(
@@ -589,6 +619,7 @@ const app = Vue.createApp({
             })
             .catch((error) => {
               console.error(error); // log the error to the console
+              this.commit_message = error
               this.alert(error); // show an alert with the error message
             });
         }

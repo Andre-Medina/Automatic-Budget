@@ -5,6 +5,7 @@ main python file for importing the python code
 
 '''
 import json
+import os
 
 from .constants import *
 from .statements import *
@@ -89,3 +90,28 @@ def text_save(object: dict, dir: str):
     with open(dir, 'w', encoding='utf-8') as file:
         file.write (str(object))
         file.close()
+
+
+
+#  █▀ █▀▀ █   █▀▀ █▀▀ ▀█▀   █▀▄▀█ █▀█ █▀ ▀█▀   █▀█ █▀▀ █▀▀ █▀▀ █▄ █ ▀█▀ 
+#  ▄█ ██▄ █▄▄ ██▄ █▄▄  █    █ ▀ █ █▄█ ▄█  █    █▀▄ ██▄ █▄▄ ██▄ █ ▀█  █  
+#  
+def select_most_recent(dir_path: str):
+
+    # get a list of all files in the directory
+    files = os.listdir(dir_path)
+    
+    # check if the list is not empty
+    if files:
+        
+        # creates full list
+        full_paths = [os.path.join(dir_path, file) for file in files]
+
+        # creates a list of times
+        files_with_times = {os.path.getctime(file_path): file_path for file_path in full_paths}
+        
+        # return the latest file
+        return files_with_times[max(files_with_times.keys())]
+    else:
+        # return None if no files found
+        raise FileNotFoundError('could not find a file or folder inside ' + dir_path)

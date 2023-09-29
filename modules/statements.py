@@ -29,8 +29,10 @@ class Statements:
     #  █▄▄ █▄█ █▀█ █▄▀ ▄▄ ▄█  █  █▀█  █  █ ▀ █ ██▄ █ ▀█  █  
     #  
     def load_statment(self, account):
+
+        from . import select_most_recent
         data = pd\
-            .read_csv(self.root_dir + BANK_STATEMENTS_DIR + '/' + account + '.csv', header=0)\
+            .read_csv(select_most_recent(self.root_dir + BANK_STATEMENTS_DIR + account + '/'), header=0)\
             .rename(columns={
                 'Date': 'date',
                 'Description':'description',
@@ -311,6 +313,7 @@ class Statements:
 
             if os.path.exists(file_name):
                 transactions = pd.read_csv(file_name, header = 0)
+                transactions.loc[:,'total'] = pd.to_numeric(transactions.loc[:,'total'], errors='coerce').replace(pd.NA, 0)
             else:
                 transactions = pd.DataFrame(columns = SAVED_TRANSACTION_COLUMNS)
 
