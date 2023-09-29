@@ -83,8 +83,9 @@ class Statements:
             transaction['amount'] = 0
 
         prediction = self.predict_transaction(transaction)
+        classified = self.find_if_classified(transaction, account)
         
-        return {'transaction': transaction, 'prediction': prediction}, 'Found transaction', 200
+        return {'transaction': transaction, 'prediction': prediction, 'classified': classified}, 'Found transaction', 200
         
         # return 'asdf', 'no more transactions!', 204
     
@@ -218,16 +219,55 @@ class Statements:
         # printing data
         print('data: ' + str(data))
 
-        # inserting transaction to output
-        if self._insert_transaction(data) == -1:
-            return 'error inserting transaction', 500
         
+        # converts full name to short hand
+        data['where'] = ALL_ACCOUNT_LIKE[data['where']]
+
         # saving transaction to list
-        if self._save_classification(data) == -1:
-            return 'error saving transaction', 500
+        response, status = self._save_classification(data)
+        if status != 202:
+            return response, status
+        
+        # inserting transaction to output
+        response, status = self._insert_transaction(data)
+        if status != 202:
+            return response, status
+        
         
         return 'success saving transaction', 202
     
+    
+    #  █▀▀ █ █▄ █ █▀▄    █ █▀▀    █▀▀ █   ▄▀█ █▀ █▀ █ █▀▀ █ █▀▀ █▀▄ 
+    #  █▀  █ █ ▀█ █▄▀ ▄▄ █ █▀  ▄▄ █▄▄ █▄▄ █▀█ ▄█ ▄█ █ █▀  █ ██▄ █▄▀ 
+    #  
+    def find_if_classified(self, transaction, where):
+
+        try:
+            file_name = ROOT_DIR + HISTORIC_CLASSIFICATIONS
+
+            # checks there is data
+            if os.path.exists(file_name):
+                classifications = pd.read_csv(file_name, header = 0)
+            else:
+                return False
+
+            # simplifying where
+            where = ALL_ACCOUNT_LIKE[where]
+
+            # finds matching classifications
+            limited_classified = classifications.query(f"\
+                date == @transaction['date'] &\
+                where == @where &\
+                description_full == @transaction['description']\
+                ")
+
+            # returns true if it found data and false if it was empty
+            return limited_classified.shape[0] > 0
+        
+        # prints error and returns false otherwise
+        except Exception as e:
+            traceback.print_exc()
+            return False
 
     
     #     █▀ ▄▀█ █ █ █▀▀    █▀▀ █   ▄▀█ █▀ █▀ █ █▀▀ █ █▀▀ ▄▀█ ▀█▀ █ █▀█ █▄ █ 
@@ -243,6 +283,7 @@ class Statements:
             else:
                 classifications = pd.DataFrame(columns = SAVED_CLASSIFICATION_COLUMNS)
 
+
             classifications.loc[len(classifications)] = [data[key] for key in SAVED_CLASSIFICATION_COLUMNS]
 
             classifications\
@@ -252,10 +293,10 @@ class Statements:
                 )\
                 .to_csv(file_name, index= False)
             
-            return 1
+            return 'success saving classification', 202
         except Exception as e:
             traceback.print_exc()
-            return -1
+            return 'error saving classification', 500
 
     
     #     █ █▄ █ █▀ █▀▀ █▀█ ▀█▀    ▀█▀ █▀█ ▄▀█ █▄ █ █▀ ▄▀█ █▀▀ ▀█▀ █ █▀█ █▄ █ 
@@ -273,8 +314,27 @@ class Statements:
             else:
                 transactions = pd.DataFrame(columns = SAVED_TRANSACTION_COLUMNS)
 
-            # converts full name to short hand
-            data['where'] = ALL_ACCOUNT_LIKE[data['where']]
+            def assert_no_dupelicates(transactions, data):
+                if data['movement'] != 'transfer':
+                    selected_transactions = transactions.query(f"\
+                        movement == @data['movement'] &\
+                        total == @data['total'] &\
+                        where == @data['where'] &\
+                        code == @data['code'] &\
+                        date == @data['date']")
+                else:
+                    selected_transactions = transactions.query(f"\
+                        movement == @data['movement'] &\
+                        amount == @data['total'] &\
+                        change == @data['where'] &\
+                        total == @data['transfer_account'] &\
+                        where == @data['date']")
+                
+                return len(selected_transactions) > 0
+                   
+
+            if assert_no_dupelicates(transactions, data):
+                return 'duplicated transaction', 500
 
             insert_data = []
             for i in range(max(len(SAVED_TRANSACTION_COLUMNS), len(SAVED_TRANSACTION_COLUMNS_TRANSFER))):
@@ -299,10 +359,10 @@ class Statements:
                 )\
                 .to_csv(file_name, index = False)
 
-            return 1
+            return 'success inserting transaction', 202
         except Exception as e:
             traceback.print_exc()
-            return -1
+            return 'error inserting transaction', 500
 
 def is_same_transaction(existing, target):
 

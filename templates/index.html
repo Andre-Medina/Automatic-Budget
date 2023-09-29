@@ -56,7 +56,7 @@ Vue.js Landing Page
                             </div>
                         </div> 
                         <div class="4u">
-                            a
+                            &nbsp
                         </div> 
                         <div class="4u">
                             <a class="button fit" @click="reset('all')">reset</a>
@@ -81,6 +81,7 @@ Vue.js Landing Page
                                 <thead>
                                     <tr>
                                         <th>no.</th>
+                                        <th>Exists</th>
                                         <th>Date</th>
                                         <th>Description</th>
                                         <th>Amount</th>
@@ -91,6 +92,7 @@ Vue.js Landing Page
                                 <tbody>
                                     <tr>
                                         <td>[[transaction_index + 1]]</td>
+                                        <td>[[transaction_classified? "Yes": ""]]</td>
                                         <td v-if="current_transaction">[[current_transaction.date]]</td>
                                         <td v-if="current_transaction">[[current_transaction.description]]</td>
                                         <td v-if="current_transaction">[[current_transaction.amount]]</td>

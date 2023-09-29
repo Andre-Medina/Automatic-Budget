@@ -47,6 +47,7 @@ const app = Vue.createApp({
         // transactions
         transaction_index: 0,
         current_transaction: null,
+        transaction_classified: false,
         short_description: '',
 
         // commiting
@@ -173,6 +174,7 @@ const app = Vue.createApp({
 
             // extracts the data
             this.current_transaction = returned.data.transaction
+            this.transaction_classified = returned.data.classified
             this.deal_with_prediction(returned.data.prediction)
             
             // sets flag and returns
@@ -389,6 +391,7 @@ const app = Vue.createApp({
 
           case 'index':
             this.transaction_index = 0
+            this.transaction_classified = false
             this.current_transaction = null
             break;
           

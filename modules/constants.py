@@ -56,7 +56,7 @@ SAVED_TRANSACTION_COLUMNS =          ['movement',    'amount',   'change',   'to
 SAVED_TRANSACTION_COLUMNS_TRANSFER = ['movement',    'total',    'where',    'transfer_account', 'description_short',    'date']
 SAVED_TRANSACTION_COLUMNS_NEEDED = ['movement','amount','where','code','description_short','date','transfer_account']
 SAVED_CLASSIFICATION_COLUMNS_NEEDED = ['movement','date','where','description_full','code','description_short','transfer_account']
-SAVED_CLASSIFICATION_COLUMNS = ['movement','date','where','description_full','code','description_short','submitted_date','transfer_account']
+SAVED_CLASSIFICATION_COLUMNS = ['movement','total','date','where','description_full','code','description_short','submitted_date','transfer_account']
 
 
 
