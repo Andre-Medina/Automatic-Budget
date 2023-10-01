@@ -53,7 +53,10 @@ const app = Vue.createApp({
         // commiting
         new_data: false,
         commit_message: "",
-        are_you_sure_message: ""
+        are_you_sure_message: "",
+
+        // extra data
+        tax: 0
       };
     },
 
@@ -230,8 +233,8 @@ const app = Vue.createApp({
 
       
       change_account(account){
-        this.reset()
         this.current_account = account
+        this.reset('all but account')
       },
 
       //  █▀▀▀▄ █▀▀▀ ▄▀▀▀▀ ▄▀▀▀ █▀▀▀▄ ▀▀█▀▀ █▀▀▄ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
@@ -376,6 +379,10 @@ const app = Vue.createApp({
             this.commit_message = ""
             break;
 
+          case 'tax':
+            this.tax = 0
+            break;
+          
           case 'code':
             console.log('resetting code')
             this.selected_code = [null]
@@ -413,8 +420,10 @@ const app = Vue.createApp({
             break;
 
           case 'all':
-            this.reset('index')
             this.reset('account')
+            
+          case 'all but account':
+            this.reset('index')
             this.reset('movement')
 
           case 'choices':
@@ -423,6 +432,7 @@ const app = Vue.createApp({
             this.reset('transfer')
             this.reset('description')
             this.reset('code')
+            this.reset('tax')
             break;
 
 
@@ -521,6 +531,13 @@ const app = Vue.createApp({
             this.reset('transfer')
           }
           
+          // tax
+
+          if(prediction.tax != null){
+            this.tax = prediction.tax
+          }else{
+            this.reset('tax')
+          }
 
           // console.log(prediction.short_description)
           // console.log(prediction.current_movement_type)
@@ -597,6 +614,7 @@ const app = Vue.createApp({
               body: JSON.stringify({ 
                 movement: this.current_movement_type,
                 amount: clean_price(this.current_transaction.amount) * (this.current_movement_type == 'output' ? -1: 1), 
+                tax: clean_price(this.tax),
                 where: this.current_account, 
                 description_short: this.short_description,
                 description_full: this.current_transaction.description,
@@ -861,5 +879,5 @@ console.log('starting mounted')
 
 
 function clean_price(price) {
-  return parseFloat(price.replace(/[^0-9.]+/g,""));
+  return parseFloat(String(price).replace(/[^0-9.]+/g,""));
 }

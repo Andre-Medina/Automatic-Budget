@@ -44,6 +44,10 @@ STATEMENT_ACCOUNTS = {
 
 ALL_ACCOUNT_LIKE = STATEMENT_ACCOUNTS | {
     'loan': '2=-l',
+    'on me wallet': 'ow',
+    'on me coins': 'oc',
+    'home wallet': 'hw',
+    'home coins': 'hc',
 }
 
 
@@ -54,9 +58,9 @@ MOVEMENT_TYPES = ['input','output','transfer','work']
 
 SAVED_TRANSACTION_COLUMNS =          ['movement',    'amount',   'change',   'total' ,           'tax',                  'where',   'code',  'description_short',    'date']
 SAVED_TRANSACTION_COLUMNS_TRANSFER = ['movement',    'total',    'where',    'transfer_account', 'description_short',    'date']
-SAVED_TRANSACTION_COLUMNS_NEEDED = ['movement','amount','where','code','description_short','date','transfer_account']
-SAVED_CLASSIFICATION_COLUMNS_NEEDED = ['movement','date','where','description_full','code','description_short','transfer_account']
-SAVED_CLASSIFICATION_COLUMNS = ['movement','total','date','where','description_full','code','description_short','submitted_date','transfer_account']
+SAVED_TRANSACTION_COLUMNS_NEEDED = ['movement','amount','tax','where','code','description_short','date','transfer_account']
+SAVED_CLASSIFICATION_COLUMNS_NEEDED = ['movement','tax','date','where','description_full','code','description_short','transfer_account']
+SAVED_CLASSIFICATION_COLUMNS = ['movement','total','tax','date','where','description_full','code','description_short','submitted_date','transfer_account']
 
 
 

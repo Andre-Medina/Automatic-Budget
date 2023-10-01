@@ -133,7 +133,7 @@ class Statements:
                     
 
             predicted = {}
-            for column in ['code','movement','description_short','transfer_account']:
+            for column in ['code','movement','description_short','transfer_account','tax']:
 
                 #
                 matching_values = selected_history[column].mode().values
@@ -157,16 +157,25 @@ class Statements:
                         else:
                             predicted['code_tag'] = None
 
-            
+            print('Predictions:')
+            print(predicted)
+
+            # some type issue
+            predicted['tax'] = int(predicted['tax'])
+
+
             # sets output, adds null if no data
             prediction = {}
-            for parameter in ['code_tag','selected_code','description_short','movement','transfer_account']:
+            for parameter in ['code_tag','selected_code','description_short','movement','transfer_account','tax']:
                 prediction[parameter] = predicted[parameter] if parameter in predicted else None
+                
+            print(prediction)
 
             return prediction
         
         # if there was any error, returns nothing
         except Exception as e:
+            print('prediction errored out')
             traceback.print_exc()
             return None
         
@@ -313,9 +322,17 @@ class Statements:
 
             if os.path.exists(file_name):
                 transactions = pd.read_csv(file_name, header = 0)
-                transactions.loc[:,'total'] = pd.to_numeric(transactions.loc[:,'total'], errors='coerce').replace(pd.NA, 0)
+                
+                # changes actual total columns numerics to ints, transfer column puts strings in 'total' column 
+                transactions.loc[transactions['movement'] != 'transfer','total'] = pd.to_numeric(transactions.loc[transactions['movement'] != 'transfer','total'], errors='coerce').replace(pd.NA, 0)
             else:
                 transactions = pd.DataFrame(columns = SAVED_TRANSACTION_COLUMNS)
+
+            if data['movement'] == 'output':
+                data['change'] *= -1
+                data['amount'] *= -1
+                data['total'] *= -1
+
 
             def assert_no_dupelicates(transactions, data):
                 if data['movement'] != 'transfer':

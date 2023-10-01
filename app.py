@@ -143,7 +143,7 @@ def get_data(data_type, extra):
     elif request.method == "POST":
         if data_type == "statement":
             response_object['message'], response_object['status'] = statements.post_transaction(json.loads(request.data.decode()))
-        
+
         else:
             response_object['message'] = "page not found"
             response_object['status'] = 404
