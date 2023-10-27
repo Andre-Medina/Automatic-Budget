@@ -22,6 +22,11 @@ statements = md.statements.Statements()
 # Create an instance of Flask class
 app = Flask(__name__)
 
+
+# moves files around
+md.move_statements()
+
+
 #  ██ ███    ██ ██████  ███████ ██   ██ 
 #  ██ ████   ██ ██   ██ ██       ██ ██  
 #  ██ ██ ██  ██ ██   ██ █████     ███   
@@ -121,7 +126,12 @@ def get_data(data_type, extra):
         #  █▀▀ █▀█ █▄ █ █▀▀ █ █▀▀ 
         #  █▄▄ █▄█ █ ▀█ █▀  █ █▄█ 
         #  
-        elif data_type == "config" and extra == "accounts":
+        elif data_type == "config" and extra == "statment_accounts":
+            response_object['data'] = md.COMMON_STATEMENT_ACCOUNTS
+            response_object["message"] = 'success'
+            response_object['status'] = 200
+            
+        elif data_type == "config" and extra == "all_accounts":
             response_object['data'] = md.ALL_ACCOUNT_LIKE
             response_object["message"] = 'success'
             response_object['status'] = 200

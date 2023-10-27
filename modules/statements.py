@@ -120,7 +120,7 @@ class Statements:
             
             print('history contains: ' + str(history.shape))
             selected_history = history[history['description_full'].apply(lambda x: is_same_transaction( x, transaction['description']))]
-
+            
 
             print('matching history: ' + str(selected_history.shape))
             # print('matchin codes: ' + str(selected_history['code']))
@@ -317,7 +317,7 @@ class Statements:
         # inserts the data into transaction file
         try:
             
-            file_name = ROOT_DIR + TRANSACTIONS_OUTPUT_DIR_NEEDS_DATE_AND_DOT_CSV + pd.to_datetime(data['date']).to_period('W-SUN').start_time.strftime('%d-%b-%Y') + '.csv'
+            file_name = ROOT_DIR + TRANSACTIONS_OUTPUT_DIR(data['date'])
             print(file_name)
 
             if os.path.exists(file_name):
@@ -340,6 +340,7 @@ class Statements:
                         movement == @data['movement'] &\
                         total == @data['total'] &\
                         where == @data['where'] &\
+                        description_short == @data['description_short'] &\
                         code == @data['code'] &\
                         date == @data['date']")
                 else:
@@ -352,7 +353,8 @@ class Statements:
                 
                 return len(selected_transactions) > 0
                    
-
+            # TODO: allowing adding duplicates, issue with tutoring on the same day
+            #           added check description is the same
             if assert_no_dupelicates(transactions, data):
                 return 'duplicated transaction', 500
 

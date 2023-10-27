@@ -22,6 +22,7 @@ const app = Vue.createApp({
         null: null,
 
         // accounts
+        statement_account_names: null,
         account_names: null,
         current_account: null,
         movement_types: null,
@@ -613,7 +614,7 @@ const app = Vue.createApp({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ 
                 movement: this.current_movement_type,
-                amount: clean_price(this.current_transaction.amount) * (this.current_movement_type == 'output' ? -1: 1), 
+                amount: clean_price(this.current_transaction.amount), // * (this.current_movement_type == 'output' ? -1: 1), 
                 tax: clean_price(this.tax),
                 where: this.current_account, 
                 description_short: this.short_description,
@@ -712,7 +713,7 @@ const app = Vue.createApp({
       //  █▀ ▀█▀ ▄▀█ ▀█▀ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀   ▄▀█ █▀▀ █▀▀ █▀█ █ █ █▄ █ ▀█▀ █▀ 
       //  ▄█  █  █▀█  █  ██▄ █ ▀ █ ██▄ █ ▀█  █    █▀█ █▄▄ █▄▄ █▄█ █▄█ █ ▀█  █  ▄█ 
       //  
-      fetch("/data/config/accounts", {method:'GET'})
+      fetch("/data/config/all_accounts", {method:'GET'})
         .then((response) => {
           if (response.ok) { // if the status code is 200-299
             return response.json(); // parse the response as JSON
@@ -728,6 +729,26 @@ const app = Vue.createApp({
           this.alert(error); // show an alert with the error message
         });
 
+
+      //  █▀ ▀█▀ ▄▀█ ▀█▀ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀   ▄▀█ █▀▀ █▀▀ █▀█ █ █ █▄ █ ▀█▀ █▀ 
+      //  ▄█  █  █▀█  █  ██▄ █ ▀ █ ██▄ █ ▀█  █    █▀█ █▄▄ █▄▄ █▄█ █▄█ █ ▀█  █  ▄█ 
+      //  
+      fetch("/data/config/statment_accounts", {method:'GET'})
+        .then((response) => {
+          if (response.ok) { // if the status code is 200-299
+            return response.json(); // parse the response as JSON
+          } else {
+            throw new Error(response.statusText); // throw an error with the status text
+          }
+        })
+        .then((returned) => {
+          this.statement_account_names = returned.data;
+        })
+        .catch((error) => {
+          console.error(error); // log the error to the console
+          this.alert(error); // show an alert with the error message
+        });
+        
         
       //  █▀▄▀█ █▀█ █ █ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀    ▀█▀ █▄█ █▀█ █▀▀ █▀ 
       //  █ ▀ █ █▄█ ▀▄▀ ██▄ █ ▀ █ ██▄ █ ▀█  █  ▄▄  █   █  █▀▀ ██▄ ▄█ 
@@ -879,5 +900,5 @@ console.log('starting mounted')
 
 
 function clean_price(price) {
-  return parseFloat(String(price).replace(/[^0-9.]+/g,""));
+  return parseFloat(String(price).replace(/[^\-0-9.]+/g,""));
 }

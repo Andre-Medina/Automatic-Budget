@@ -48,10 +48,10 @@ Vue.js Landing Page
                     --->
                     <div class="row">
                         <div class="4u">
-                            <div v-if="account_names" class="select-wrapper">
+                            <div v-if="statement_account_names" class="select-wrapper">
                                 <select v-model="current_account" @change="change_account($event.target.value);">
                                     <option :value="null">-</option>
-                                    <option v-for="account in Object.keys(account_names)" :value="account" :key="account">[[ account_names[account] ]] - [[account]]</option>
+                                    <option v-for="account in Object.keys(statement_account_names)" :value="account" :key="account">[[ statement_account_names[account] ]] - [[account]]</option>
                                 </select>
                             </div>
                         </div> 

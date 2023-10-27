@@ -13,6 +13,7 @@ from .statements import *
 __all__ = [
     'constants',
     'statements',
+    'move_statements',
     'json_save',
     'json_read',
     'text_save',
@@ -115,3 +116,33 @@ def select_most_recent(dir_path: str):
     else:
         # return None if no files found
         raise FileNotFoundError('could not find a file or folder inside ' + dir_path)
+
+
+
+
+
+
+def move_statements():
+    """
+    moves files from 
+    UNSORTED_BANK_STATEMENTS_DIR 
+    to their specific bank account folders using
+    ACCOUNT_NUMBERS
+    """
+    print('moving files...')
+    # get a list of all files in the directory
+    files = os.listdir(ROOT_DIR + UNSORTED_BANK_STATEMENTS_DIR)
+
+    # check if the list is not empty
+    for file in files:
+        
+        print('\tmoving ' + file)
+        if file[0:9] in ACCOUNT_NUMBERS.keys():
+
+            # moves the file by renaming
+            os.rename(
+                ROOT_DIR + UNSORTED_BANK_STATEMENTS_DIR + file, 
+                ROOT_DIR + BANK_STATEMENTS_DIR + ACCOUNT_NUMBERS[file[0:9]] + '/' + file
+                )
+
+    print('moved all files!')
