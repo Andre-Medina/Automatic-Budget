@@ -119,8 +119,8 @@ class Statements:
             history = pd.read_csv(ROOT_DIR + HISTORIC_CLASSIFICATIONS,header=0)\
             
             print('history contains: ' + str(history.shape))
-            selected_history = history[history['description_full'].apply(lambda x: is_same_transaction( x, transaction['description']))]
-            
+            # selected_history = history[history['description_full'].apply(lambda x: is_same_transaction( x, transaction['description']))]   OLD
+            selected_history = select_top_matching(history, transaction)
 
             print('matching history: ' + str(selected_history.shape))
             # print('matchin codes: ' + str(selected_history['code']))
@@ -386,7 +386,53 @@ class Statements:
             traceback.print_exc()
             return 'error inserting transaction', 500
 
+
+
+MATCH_THRESHOLD = 0.99      # defs takes all above this threshold
+MIN_THRESHOLD = 0.7         # will take the top x above this
+MIN_MATCHES = 10            # takes these top ones at most
+def select_top_matching(existing, target):
+    """
+    selects top matching transactions to do futher analysis to
+    
+    existing: description of single row
+    target: row
+
+    returns: limitted dataframe
+    """
+
+    # calculates the ratio rank for the transactions
+    existing.loc[:,'rank'] = (existing
+        .apply(lambda row: SequenceMatcher(None, row['description_full'], target['description']).ratio(), axis = 1)
+    )
+    
+    existing = (
+        # selects the top
+        existing.sort_values('rank',ascending = False)
+            .head(
+            # either 10 or all the decent matches
+            max((existing['rank'] > MATCH_THRESHOLD).sum(), MIN_MATCHES)
+        
+        # also only selects the matches with above the match threshold
+        )[existing['rank'] > MIN_THRESHOLD]
+    )
+
+    print(existing)
+    return existing
+
+    
+
+
 def is_same_transaction(existing, target):
+    """
+    Old function used to losely rate functions based on if they were similar enought to eachother
+    
+    existing: description of single row
+    target: description target
+
+    returns: boolean for given pair
+    """
+
 
     ratio_threshold = 0.65
     if (target[0:8] == 'Transfer') or (existing[0:8] == 'Transfer'):
