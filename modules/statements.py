@@ -22,7 +22,7 @@ class Statements:
         self.accounts = accounts
 
     def __all__(self):
-        return ['load_statement','get_transaction']
+        return ['load_statement','get_transaction','get_transaction_new']
     
     
     #  █   █▀█ ▄▀█ █▀▄    █▀ ▀█▀ ▄▀█ ▀█▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀ 
@@ -64,7 +64,6 @@ class Statements:
             status_code: int
                 https status code
         '''
-        
         if account not in self.accounts:
             return [], "sorry, could not find this account", 400
 
@@ -80,6 +79,7 @@ class Statements:
             # return {'transaction': 'asdfasdf', 'prediction': "adsf"}, "no more transactions!", 206
         
         transaction = self.statments[account].iloc[transaction_number].to_dict()
+        transaction['transaction_index'] = transaction_number
 
         if pd.isna(transaction['amount']) or (transaction['amount'] == 'nan'):
             transaction['amount'] = 0
@@ -87,10 +87,43 @@ class Statements:
         prediction = self.predict_transaction(transaction)
         classified = self.find_if_classified(transaction, account)
         
-        return {'transaction': transaction, 'prediction': prediction, 'classified': classified}, 'Found transaction', 200
+        results = {'transaction': transaction, 'prediction': prediction, 'classified': classified}, 'Found transaction', 200
+
+        print(f'data found: {str(results)}')
+
+        return results
         
         # return 'asdf', 'no more transactions!', 204
     
+    def get_transaction_new(self, account, transaction_number):
+        '''
+        
+        same as get_transaction
+        '''
+        print('FINDING NEW TRANSACTION')
+
+
+        # recursive call looking for a new transaction
+        while True:
+            
+            result = self.get_transaction(account, transaction_number)
+
+            # if transaction is fine
+            if result[2] == 200:
+
+                # if its classified, continue
+                if result[0]['classified']:
+                    transaction_number += 1
+                    print(f'\t\tclassified, trying againg at {transaction_number}')
+                    continue
+                else:
+                    print('\t\tfound!')
+                    return result
+
+            # if at the end
+            elif result[2] == 206:
+                return [], 'All transactions classified!', 206
+                
     
     #  █▀█ █▀█ █▀▀ █▀▄ █ █▀▀ ▀█▀    ▀█▀ █▀█ ▄▀█ █▄ █ █▀ ▄▀█ █▀▀ ▀█▀ █ █▀█ █▄ █ 
     #  █▀▀ █▀▄ ██▄ █▄▀ █ █▄▄  █  ▄▄  █  █▀▄ █▀█ █ ▀█ ▄█ █▀█ █▄▄  █  █ █▄█ █ ▀█ 
@@ -118,7 +151,7 @@ class Statements:
         try:
             history = pd.read_csv(ROOT_DIR + HISTORIC_CLASSIFICATIONS,header=0)\
             
-            print('history contains: ' + str(history.shape))
+            # print('history contains: ' + str(history.shape))
             # selected_history = history[history['description_full'].apply(lambda x: is_same_transaction( x, transaction['description']))]   OLD
             selected_history = select_top_matching(history, transaction)
 
@@ -137,7 +170,7 @@ class Statements:
 
                 #
                 matching_values = selected_history[column].mode().values
-                print(matching_values)
+                # print(matching_values)
 
                 if len(matching_values):
                     
@@ -157,8 +190,8 @@ class Statements:
                         else:
                             predicted['code_tag'] = None
 
-            print('Predictions:')
-            print(predicted)
+            # print('Predictions:')
+            # print(predicted)
 
             # some type issue
             predicted['tax'] = int(predicted['tax'])
@@ -220,7 +253,7 @@ class Statements:
             print('invalid movement')
             return 'invalid movement type: ' + str(data['movement']), 400
         
-        data['change'] = data['change'] if 'change' in data else 0
+        data['change'] = ['change'] if 'change' in data else 0
         data['tax'] = data['tax'] if 'tax' in data else 0
 
         data['total'] = float(data['amount']) - float(data['change'])
@@ -252,6 +285,11 @@ class Statements:
     #  █▀  █ █ ▀█ █▄▀ ▄▄ █ █▀  ▄▄ █▄▄ █▄▄ █▀█ ▄█ ▄█ █ █▀  █ ██▄ █▄▀ 
     #  
     def find_if_classified(self, transaction, where):
+        '''
+        
+        returns
+            boolean if found or not
+        '''
 
         try:
             file_name = ROOT_DIR + HISTORIC_CLASSIFICATIONS
@@ -417,7 +455,7 @@ def select_top_matching(existing, target):
         )[existing['rank'] > MIN_THRESHOLD]
     )
 
-    print(existing)
+    # print(existing)
     return existing
 
     

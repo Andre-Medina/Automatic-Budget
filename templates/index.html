@@ -72,10 +72,13 @@ Vue.js Landing Page
                     <div class="row">
                         <div class="4u">
                             <ul class="actions fit">
-                                <li><button @click.prevent="prev_transaction(1)" @click.ctrl.prevent="prev_transaction(10)" @click.alt.prevent="prev_transaction(50)" class="button fit">Back</button></li>
-                                <li><button @click.prevent="next_transaction(1)" @click.ctrl.prevent="next_transaction(10)" @click.alt.prevent="next_transaction(50)" class="button fit">Next</button></li>
+                                <li><a @click.prevent="prev_transaction(1)" @click.ctrl.prevent="prev_transaction(10)" @click.alt.prevent="prev_transaction(50)" class="button fit">Back</a></li>
+                                <li><a @click.prevent="next_transaction(1)" @click.ctrl.prevent="next_transaction(10)" @click.alt.prevent="next_transaction(50)" class="button fit">Next</a></li>
                             </ul>
-                            <a class="button fit" @click="reset('index')">to start</a>
+                            <ul class="actions fit">
+                                <li><a @click.prevent="reset('index')" class="button fit">to start</a></li>
+                                <li><button @click.prevent="next_transaction('new')" class="button fit">Next new</button></li>
+                            </ul>
                         </div> 
                         <div class="8u table-wrapper">			
                             <table>

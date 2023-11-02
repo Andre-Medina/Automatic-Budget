@@ -47,6 +47,7 @@ const app = Vue.createApp({
 
         // transactions
         transaction_index: 0,
+        transaction_new: 0,
         current_transaction: null,
         transaction_classified: false,
         short_description: '',
@@ -153,21 +154,34 @@ const app = Vue.createApp({
         //update are you sure
         if(this.current_account){
           try{
-            const response = await fetch("/data/statement/" + this.current_account + '?transaction=' + this.transaction_index, {method:'GET'})
+            this.alert('loading...', 'no timeout')
+            const response = await fetch("/data/statement/" + this.current_account + '?transaction=' + this.transaction_index + '&new=' + this.transaction_new, {method:'GET'})
             if (!response.ok) { // if the status code is not 200-299
               throw new Error(response.statusText); // throw an error with the status text
             }
             console.log(response)
             const returned = await response.json()  
+            this.alert('Found!', 500)
             console.log(returned)
+
+            // if was looking for a new one
+            if(this.transaction_new){
+              // resets new transaction
+              this.transaction_new = 0 
+              this.transaction_index = returned.data.transaction.transaction_index
+            }
 
             // if nothing was found (206 is for nothing found)
             if (returned.status == 206){
-
-              this.alert('too far', 1000)
-
+              
+              if(returned.message == 'no more transactions!'){
+                this.alert('no more transactions!', 1000)
+                this.transaction_index = returned.data.max_transactions - 1
+              }else{
+                this.alert(returned.message, 2000)
+                this.reset('index')
+              }
               // sets transaction index to the max
-              this.transaction_index = returned.data.max_transactions - 1
               return null
             }
 
@@ -214,14 +228,20 @@ const app = Vue.createApp({
       //  
 
       
-      alert(alert, timeout = 2000){
+      alert(alert, timeout = 2000, ){
         this.temp_alert = alert;
-        this.show_alert = true;
+        this.show_alert = true;   // increases alert level
         console.log('starting timeout')
-        setTimeout(() => {
-          console.log('timeout reached')
-          this.show_alert = false
-        }, timeout);
+        
+        // if no timeout:
+        if(timeout != 'no timeout'){
+
+          // creates a timeout to remove message
+          setTimeout(() => {
+            console.log('timeout reached')
+            this.show_alert = false   // reduces alert level
+          }, timeout);
+        }
       },
 
       //  █▀█ █▀█ █ █▄ █ ▀█▀ █ █ ▄▀█ █   █ █ █▀▀ 
@@ -398,6 +418,7 @@ const app = Vue.createApp({
 
           case 'index':
             this.transaction_index = 0
+            this.transaction_new = 0 
             this.commit_message = ""
             this.transaction_classified = false
             this.current_transaction = null
@@ -465,8 +486,14 @@ const app = Vue.createApp({
       //  █ ▀█ ██▄ █ █  █  ▄▄  █  █▀▄ █▀█ █ ▀█ ▄█ █▀█ █▄▄  █  █ █▄█ █ ▀█ 
       //  
       next_transaction(distance){
+        if(distance == 'new'){
+          this.transaction_new = 1
+          distance = 1
+        }
+        
         this.transaction_index += distance
       },
+
 
       //  █▀▄ █▀▀ ▄▀█ █      █ █ █ █ ▀█▀ █ █    █▀█ █▀█ █▀▀ █▀▄ █ █▀▀ ▀█▀ █ █▀█ █▄ █ 
       //  █▄▀ ██▄ █▀█ █▄▄ ▄▄ ▀▄▀▄▀ █  █  █▀█ ▄▄ █▀▀ █▀▄ ██▄ █▄▀ █ █▄▄  █  █ █▄█ █ ▀█ 
