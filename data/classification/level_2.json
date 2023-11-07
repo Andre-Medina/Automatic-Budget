@@ -347,6 +347,10 @@
                 "description": "Education",
                 "next": {}
             },
+            "i": {
+                "description": "Insurance",
+                "next": {}
+            },
             "s": {
                 "description": "Sports",
                 "next": {

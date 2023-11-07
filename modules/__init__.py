@@ -98,6 +98,20 @@ def text_save(object: dict, dir: str):
 #  ▄█ ██▄ █▄▄ ██▄ █▄▄  █    █ ▀ █ █▄█ ▄█  █    █▀▄ ██▄ █▄▄ ██▄ █ ▀█  █  
 #  
 def select_most_recent(dir_path: str):
+    '''
+    finds the most recent file in a directory
+
+    ------
+    parameters
+    dir_path: str
+        directory for the file ending in '...folder/'
+
+    ------
+    return
+    : str
+        full path for most recent file in said directory as '...folder/file.ext'
+
+    '''
 
     # get a list of all files in the directory
     files = os.listdir(dir_path)
