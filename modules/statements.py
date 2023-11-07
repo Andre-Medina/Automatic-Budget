@@ -22,15 +22,17 @@ class Statements:
         self.accounts = accounts
 
     def __all__(self):
-        return ['load_statement','get_transaction']
+        return ['load_statement','get_transaction','get_transaction_new']
     
     
     #  █   █▀█ ▄▀█ █▀▄    █▀ ▀█▀ ▄▀█ ▀█▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀ 
     #  █▄▄ █▄█ █▀█ █▄▀ ▄▄ ▄█  █  █▀█  █  █ ▀ █ ██▄ █ ▀█  █  
     #  
     def load_statment(self, account):
+
+        from . import select_most_recent
         data = pd\
-            .read_csv(self.root_dir + BANK_STATEMENTS_DIR + '/' + account + '.csv', header=0)\
+            .read_csv(select_most_recent(self.root_dir + BANK_STATEMENTS_DIR + account + '/'), header=0)\
             .rename(columns={
                 'Date': 'date',
                 'Description':'description',
@@ -62,7 +64,6 @@ class Statements:
             status_code: int
                 https status code
         '''
-        
         if account not in self.accounts:
             return [], "sorry, could not find this account", 400
 
@@ -78,16 +79,51 @@ class Statements:
             # return {'transaction': 'asdfasdf', 'prediction': "adsf"}, "no more transactions!", 206
         
         transaction = self.statments[account].iloc[transaction_number].to_dict()
+        transaction['transaction_index'] = transaction_number
 
         if pd.isna(transaction['amount']) or (transaction['amount'] == 'nan'):
             transaction['amount'] = 0
 
         prediction = self.predict_transaction(transaction)
+        classified = self.find_if_classified(transaction, account)
         
-        return {'transaction': transaction, 'prediction': prediction}, 'Found transaction', 200
+        results = {'transaction': transaction, 'prediction': prediction, 'classified': classified}, 'Found transaction', 200
+
+        print(f'data found: {str(results)}')
+
+        return results
         
         # return 'asdf', 'no more transactions!', 204
     
+    def get_transaction_new(self, account, transaction_number):
+        '''
+        
+        same as get_transaction
+        '''
+        print('FINDING NEW TRANSACTION')
+
+
+        # recursive call looking for a new transaction
+        while True:
+            
+            result = self.get_transaction(account, transaction_number)
+
+            # if transaction is fine
+            if result[2] == 200:
+
+                # if its classified, continue
+                if result[0]['classified']:
+                    transaction_number += 1
+                    print(f'\t\tclassified, trying againg at {transaction_number}')
+                    continue
+                else:
+                    print('\t\tfound!')
+                    return result
+
+            # if at the end
+            elif result[2] == 206:
+                return [], 'All transactions classified!', 206
+                
     
     #  █▀█ █▀█ █▀▀ █▀▄ █ █▀▀ ▀█▀    ▀█▀ █▀█ ▄▀█ █▄ █ █▀ ▄▀█ █▀▀ ▀█▀ █ █▀█ █▄ █ 
     #  █▀▀ █▀▄ ██▄ █▄▀ █ █▄▄  █  ▄▄  █  █▀▄ █▀█ █ ▀█ ▄█ █▀█ █▄▄  █  █ █▄█ █ ▀█ 
@@ -115,9 +151,9 @@ class Statements:
         try:
             history = pd.read_csv(ROOT_DIR + HISTORIC_CLASSIFICATIONS,header=0)\
             
-            print('history contains: ' + str(history.shape))
-            selected_history = history[history['description_full'].apply(lambda x: is_same_transaction( x, transaction['description']))]
-
+            # print('history contains: ' + str(history.shape))
+            # selected_history = history[history['description_full'].apply(lambda x: is_same_transaction( x, transaction['description']))]   OLD
+            selected_history = select_top_matching(history, transaction)
 
             print('matching history: ' + str(selected_history.shape))
             # print('matchin codes: ' + str(selected_history['code']))
@@ -130,11 +166,11 @@ class Statements:
                     
 
             predicted = {}
-            for column in ['code','movement','description_short']:
+            for column in ['code','movement','description_short','transfer_account','tax']:
 
                 #
                 matching_values = selected_history[column].mode().values
-                print(matching_values)
+                # print(matching_values)
 
                 if len(matching_values):
                     
@@ -154,16 +190,25 @@ class Statements:
                         else:
                             predicted['code_tag'] = None
 
-            
+            # print('Predictions:')
+            # print(predicted)
+
+            # some type issue
+            predicted['tax'] = int(predicted['tax'])
+
+
             # sets output, adds null if no data
             prediction = {}
-            for parameter in ['code_tag','selected_code','description_short','movement']:
+            for parameter in ['code_tag','selected_code','description_short','movement','transfer_account','tax']:
                 prediction[parameter] = predicted[parameter] if parameter in predicted else None
+                
+            print(prediction)
 
             return prediction
         
         # if there was any error, returns nothing
         except Exception as e:
+            print('prediction errored out')
             traceback.print_exc()
             return None
         
@@ -208,7 +253,7 @@ class Statements:
             print('invalid movement')
             return 'invalid movement type: ' + str(data['movement']), 400
         
-        data['change'] = data['change'] if 'change' in data else 0
+        data['change'] = ['change'] if 'change' in data else 0
         data['tax'] = data['tax'] if 'tax' in data else 0
 
         data['total'] = float(data['amount']) - float(data['change'])
@@ -218,16 +263,60 @@ class Statements:
         # printing data
         print('data: ' + str(data))
 
-        # inserting transaction to output
-        if self._insert_transaction(data) == -1:
-            return 'error inserting transaction', 500
         
+        # converts full name to short hand
+        data['where'] = ALL_ACCOUNT_LIKE[data['where']]
+
         # saving transaction to list
-        if self._save_classification(data) == -1:
-            return 'error saving transaction', 500
+        response, status = self._save_classification(data)
+        if status != 202:
+            return response, status
+        
+        # inserting transaction to output
+        response, status = self._insert_transaction(data)
+        if status != 202:
+            return response, status
+        
         
         return 'success saving transaction', 202
     
+    
+    #  █▀▀ █ █▄ █ █▀▄    █ █▀▀    █▀▀ █   ▄▀█ █▀ █▀ █ █▀▀ █ █▀▀ █▀▄ 
+    #  █▀  █ █ ▀█ █▄▀ ▄▄ █ █▀  ▄▄ █▄▄ █▄▄ █▀█ ▄█ ▄█ █ █▀  █ ██▄ █▄▀ 
+    #  
+    def find_if_classified(self, transaction, where):
+        '''
+        
+        returns
+            boolean if found or not
+        '''
+
+        try:
+            file_name = ROOT_DIR + HISTORIC_CLASSIFICATIONS
+
+            # checks there is data
+            if os.path.exists(file_name):
+                classifications = pd.read_csv(file_name, header = 0)
+            else:
+                return False
+
+            # simplifying where
+            where = ALL_ACCOUNT_LIKE[where]
+
+            # finds matching classifications
+            limited_classified = classifications.query(f"\
+                date == @transaction['date'] &\
+                where == @where &\
+                description_full == @transaction['description']\
+                ")
+
+            # returns true if it found data and false if it was empty
+            return limited_classified.shape[0] > 0
+        
+        # prints error and returns false otherwise
+        except Exception as e:
+            traceback.print_exc()
+            return False
 
     
     #     █▀ ▄▀█ █ █ █▀▀    █▀▀ █   ▄▀█ █▀ █▀ █ █▀▀ █ █▀▀ ▄▀█ ▀█▀ █ █▀█ █▄ █ 
@@ -243,6 +332,7 @@ class Statements:
             else:
                 classifications = pd.DataFrame(columns = SAVED_CLASSIFICATION_COLUMNS)
 
+
             classifications.loc[len(classifications)] = [data[key] for key in SAVED_CLASSIFICATION_COLUMNS]
 
             classifications\
@@ -252,10 +342,10 @@ class Statements:
                 )\
                 .to_csv(file_name, index= False)
             
-            return 1
+            return 'success saving classification', 202
         except Exception as e:
             traceback.print_exc()
-            return -1
+            return 'error saving classification', 500
 
     
     #     █ █▄ █ █▀ █▀▀ █▀█ ▀█▀    ▀█▀ █▀█ ▄▀█ █▄ █ █▀ ▄▀█ █▀▀ ▀█▀ █ █▀█ █▄ █ 
@@ -265,20 +355,62 @@ class Statements:
         # inserts the data into transaction file
         try:
             
-            file_name = ROOT_DIR + TRANSACTIONS_OUTPUT_DIR_NEEDS_DATE_AND_DOT_CSV + pd.to_datetime(data['date']).to_period('W-SUN').start_time.strftime('%d-%b-%Y') + '.csv'
+            file_name = ROOT_DIR + TRANSACTIONS_OUTPUT_DIR(data['date'])
             print(file_name)
 
             if os.path.exists(file_name):
                 transactions = pd.read_csv(file_name, header = 0)
+                
+                # changes actual total columns numerics to ints, transfer column puts strings in 'total' column 
+                transactions.loc[transactions['movement'] != 'transfer','total'] = pd.to_numeric(transactions.loc[transactions['movement'] != 'transfer','total'], errors='coerce').replace(pd.NA, 0)
             else:
                 transactions = pd.DataFrame(columns = SAVED_TRANSACTION_COLUMNS)
 
-            # converts full name to short hand
-            data['where'] = ALL_ACCOUNT_LIKE[data['where']]
+            if data['movement'] == 'output':
+                data['change'] *= -1
+                data['amount'] *= -1
+                data['total'] *= -1
 
-            # saves data
-            transactions.loc[len(transactions)] = [(data[key] if key in data else '') for key in SAVED_TRANSACTION_COLUMNS]
 
+            def assert_no_dupelicates(transactions, data):
+                if data['movement'] != 'transfer':
+                    selected_transactions = transactions.query(f"\
+                        movement == @data['movement'] &\
+                        total == @data['total'] &\
+                        where == @data['where'] &\
+                        description_short == @data['description_short'] &\
+                        code == @data['code'] &\
+                        date == @data['date']")
+                else:
+                    selected_transactions = transactions.query(f"\
+                        movement == @data['movement'] &\
+                        amount == @data['total'] &\
+                        change == @data['where'] &\
+                        total == @data['transfer_account'] &\
+                        where == @data['date']")
+                
+                return len(selected_transactions) > 0
+                   
+            # TODO: allowing adding duplicates, issue with tutoring on the same day
+            #           added check description is the same
+            if assert_no_dupelicates(transactions, data):
+                return 'duplicated transaction', 500
+
+            insert_data = []
+            for i in range(max(len(SAVED_TRANSACTION_COLUMNS), len(SAVED_TRANSACTION_COLUMNS_TRANSFER))):
+                if i < len( (SAVED_TRANSACTION_COLUMNS if data['movement'] != 'transfer' else SAVED_TRANSACTION_COLUMNS_TRANSFER) ):
+                    key = (SAVED_TRANSACTION_COLUMNS if data['movement'] != 'transfer' else SAVED_TRANSACTION_COLUMNS_TRANSFER)[i]
+                    insert_data.append(data[key] if key in data else "")
+                else:
+                    insert_data.append("")
+                
+            # inserts the data
+            transactions.loc[len(transactions)] = insert_data
+            # if data['movement'] != 'transfer':
+            #     # saves data
+            #     transactions.loc[len(transactions)] = [(data[key] if key in data else '') for key in SAVED_TRANSACTION_COLUMNS]
+            # else:
+            #     transactions.loc[len(transactions)] = [(data[key] if key in data else '') for key in SAVED_TRANSACTION_COLUMNS_TRANSFER]
 
             transactions\
                 .sort_values(
@@ -287,16 +419,69 @@ class Statements:
                 )\
                 .to_csv(file_name, index = False)
 
-            return 1
+            return 'success inserting transaction', 202
         except Exception as e:
             traceback.print_exc()
-            return -1
+            return 'error inserting transaction', 500
+
+
+
+MATCH_THRESHOLD = 0.99      # defs takes all above this threshold
+MIN_THRESHOLD = 0.7         # will take the top x above this
+MIN_MATCHES = 10            # takes these top ones at most
+def select_top_matching(existing, target):
+    """
+    selects top matching transactions to do futher analysis to
+    
+    existing: description of single row
+    target: row
+
+    returns: limitted dataframe
+    """
+
+    # calculates the ratio rank for the transactions
+    existing.loc[:,'rank'] = (existing
+        .apply(lambda row: SequenceMatcher(None, row['description_full'], target['description']).ratio(), axis = 1)
+    )
+    
+    existing = (
+        # selects the top
+        existing.sort_values('rank',ascending = False)
+            .head(
+            # either 10 or all the decent matches
+            max((existing['rank'] > MATCH_THRESHOLD).sum(), MIN_MATCHES)
+        
+        # also only selects the matches with above the match threshold
+        )[existing['rank'] > MIN_THRESHOLD]
+    )
+
+    # print(existing)
+    return existing
+
+    
+
 
 def is_same_transaction(existing, target):
+    """
+    Old function used to losely rate functions based on if they were similar enought to eachother
+    
+    existing: description of single row
+    target: description target
+
+    returns: boolean for given pair
+    """
+
 
     ratio_threshold = 0.65
     if (target[0:8] == 'Transfer') or (existing[0:8] == 'Transfer'):
         ratio_threshold = 0.65
+
+    if (
+        (('Transfer from Andre Medina' == existing[0:26]) and ('Transfer to Andre Medina' == target[0:24])) or
+        (('Transfer from Andre Medina' == target[0:26]) and ('Transfer to Andre Medina' == existing[0:24]))
+    ):
+        ratio_threshold = 0.99
+        
 
 
     # print(SequenceMatcher(None, existing, target).ratio())

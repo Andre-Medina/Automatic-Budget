@@ -19,8 +19,10 @@ const app = Vue.createApp({
         // general
         temp_alert: "",
         show_alert: false,
+        null: null,
 
         // accounts
+        statement_account_names: null,
         account_names: null,
         current_account: null,
         movement_types: null,
@@ -39,15 +41,24 @@ const app = Vue.createApp({
         code_tag: {selected_tag: [null], extra: null},
         tag_selected_levels: [null],
 
+        // transfer
+        transfer_account: null,
+        transfer_account_extra: "",
+
         // transactions
         transaction_index: 0,
+        transaction_new: 0,
         current_transaction: null,
+        transaction_classified: false,
         short_description: '',
 
         // commiting
         new_data: false,
         commit_message: "",
-        are_you_sure_flag: null,
+        are_you_sure_message: "",
+
+        // extra data
+        tax: 0
       };
     },
 
@@ -136,30 +147,41 @@ const app = Vue.createApp({
       // calculates current transaction
       async get_current_transaction(){
         this.reset()
-        this.short_description = ""
-        this.commit_message = ""
-        this.are_you_sure_flag = false
+        
 
         // this.push({query: { plan: 'private' }})
 
         //update are you sure
         if(this.current_account){
           try{
-            const response = await fetch("/data/statement/" + this.current_account + '?transaction=' + this.transaction_index, {method:'GET'})
+            this.alert('loading...', 'no timeout')
+            const response = await fetch("/data/statement/" + this.current_account + '?transaction=' + this.transaction_index + '&new=' + this.transaction_new, {method:'GET'})
             if (!response.ok) { // if the status code is not 200-299
               throw new Error(response.statusText); // throw an error with the status text
             }
             console.log(response)
             const returned = await response.json()  
+            this.alert('Found!', 500)
             console.log(returned)
+
+            // if was looking for a new one
+            if(this.transaction_new){
+              // resets new transaction
+              this.transaction_new = 0 
+              this.transaction_index = returned.data.transaction.transaction_index
+            }
 
             // if nothing was found (206 is for nothing found)
             if (returned.status == 206){
-
-              this.alert('too far', 1000)
-
+              
+              if(returned.message == 'no more transactions!'){
+                this.alert('no more transactions!', 1000)
+                this.transaction_index = returned.data.max_transactions - 1
+              }else{
+                this.alert(returned.message, 2000)
+                this.reset('index')
+              }
               // sets transaction index to the max
-              this.transaction_index = returned.data.max_transactions - 1
               return null
             }
 
@@ -168,6 +190,7 @@ const app = Vue.createApp({
 
             // extracts the data
             this.current_transaction = returned.data.transaction
+            this.transaction_classified = returned.data.classified
             this.deal_with_prediction(returned.data.prediction)
             
             // sets flag and returns
@@ -205,14 +228,20 @@ const app = Vue.createApp({
       //  
 
       
-      alert(alert, timeout = 2000){
+      alert(alert, timeout = 2000, ){
         this.temp_alert = alert;
-        this.show_alert = true;
+        this.show_alert = true;   // increases alert level
         console.log('starting timeout')
-        setTimeout(() => {
-          console.log('timeout reached')
-          this.show_alert = false
-        }, timeout);
+        
+        // if no timeout:
+        if(timeout != 'no timeout'){
+
+          // creates a timeout to remove message
+          setTimeout(() => {
+            console.log('timeout reached')
+            this.show_alert = false   // reduces alert level
+          }, timeout);
+        }
       },
 
       //  █▀█ █▀█ █ █▄ █ ▀█▀ █ █ ▄▀█ █   █ █ █▀▀ 
@@ -224,15 +253,9 @@ const app = Vue.createApp({
       },
 
       
-      update_are_you_sure(){
-        console.log(this.are_you_sure_flag)
-        this.are_you_sure_flag = false
-        return this.are_you_sure_flag
-      },
-      
       change_account(account){
-        this.reset()
         this.current_account = account
+        this.reset('all but account')
       },
 
       //  █▀▀▀▄ █▀▀▀ ▄▀▀▀▀ ▄▀▀▀ █▀▀▀▄ ▀▀█▀▀ █▀▀▄ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
@@ -372,9 +395,20 @@ const app = Vue.createApp({
       // resets code
       reset(what = 'choices'){
         switch (what) {
+          case 'are_you_sure':
+            this.are_you_sure_message = ""
+            this.commit_message = ""
+            break;
+
+          case 'tax':
+            this.tax = 0
+            break;
+          
           case 'code':
+            console.log('resetting code')
             this.selected_code = [null]
             this.selected_levels = [this.description_levels.level_1]
+            console.log('done')
             break;
         
           case 'tag':
@@ -384,20 +418,43 @@ const app = Vue.createApp({
 
           case 'index':
             this.transaction_index = 0
+            this.transaction_new = 0 
+            this.commit_message = ""
+            this.transaction_classified = false
             this.current_transaction = null
+            break;
+          
+          case 'description':
+            this.short_description = ""
+            break;
+
+          case 'movement':
+            this.current_movement_type = null
             break;
             
           case 'account':
             this.current_account = null;
             break;
+          
+          case 'transfer':
+            this.transfer_account = null;
+            this.transfer_account_extra = "";
+            break;
 
           case 'all':
-            this.reset('index')
             this.reset('account')
+            
+          case 'all but account':
+            this.reset('index')
+            this.reset('movement')
 
           case 'choices':
+            this.reset('are_you_sure')
             this.reset('tag')
+            this.reset('transfer')
+            this.reset('description')
             this.reset('code')
+            this.reset('tax')
             break;
 
 
@@ -429,8 +486,14 @@ const app = Vue.createApp({
       //  █ ▀█ ██▄ █ █  █  ▄▄  █  █▀▄ █▀█ █ ▀█ ▄█ █▀█ █▄▄  █  █ █▄█ █ ▀█ 
       //  
       next_transaction(distance){
+        if(distance == 'new'){
+          this.transaction_new = 1
+          distance = 1
+        }
+        
         this.transaction_index += distance
       },
+
 
       //  █▀▄ █▀▀ ▄▀█ █      █ █ █ █ ▀█▀ █ █    █▀█ █▀█ █▀▀ █▀▄ █ █▀▀ ▀█▀ █ █▀█ █▄ █ 
       //  █▄▀ ██▄ █▀█ █▄▄ ▄▄ ▀▄▀▄▀ █  █  █▀█ ▄▄ █▀▀ █▀▄ ██▄ █▄▀ █ █▄▄  █  █ █▄█ █ ▀█ 
@@ -479,16 +542,30 @@ const app = Vue.createApp({
           if(prediction.description_short != null){
             this.short_description = prediction.description_short;
           }else{
-            this.short_description = ""
+            this.reset('description')
           }
           
           // updates movement
           if(prediction.movement != null){
             this.current_movement_type = prediction.movement
           }else{
-            this.current_movement_type = null
+            this.reset('movement')
           }
           
+          // transfer account
+          if(prediction.transfer_account != null){
+            this.transfer_account = Object.keys(this.account_names).find(key => this.account_names[key] == prediction.transfer_account)
+          }else{
+            this.reset('transfer')
+          }
+          
+          // tax
+
+          if(prediction.tax != null){
+            this.tax = prediction.tax
+          }else{
+            this.reset('tax')
+          }
 
           // console.log(prediction.short_description)
           // console.log(prediction.current_movement_type)
@@ -508,18 +585,53 @@ const app = Vue.createApp({
       //  
       submit_transaction(are_you_sure = false){
         
+        // resets are you sure
+        this.reset('are_you_sure')
+
+        // if not sure
         if(!are_you_sure){
-          if(
-            this.current_transaction == null | 
-            this.current_movement_type == null | 
-            this.selected_code[0] == null 
-            ){
-              this.are_you_sure_flag = true
-              return
+
+          // checking description
+          if(this.short_description == ""){
+            this.are_you_sure_message += " There is no description."
+          }
+
+          // checking if it was classfied already
+          if(this.transaction_classified){
+            this.are_you_sure_message += " This transaction has already been classified."
+          }
+          
+          // checking current transaction
+          if(this.current_transaction == null){
+            this.are_you_sure_message += " There is no transaction"
+          }
+
+          // checking movement type
+          if(this.current_movement_type == null){
+            this.are_you_sure_message += " There is no movement type"
+          }
+          if(this.current_movement_type == 'transfer'){
+            console.log('checking transfer')
+
+            // its transfering so checking transfer account
+            if(this.transfer_account == null){
+              console.log('missing transfer')
+              this.are_you_sure_message += " There is no transfer account specified"
+            }
+          }else{
+
+            // its not transferring so checking code
+            if(this.selected_code[0] == null){
+              this.are_you_sure_message += " There is no code selected"
+            }
+          }
+          
+          // if anything was missing, returns
+          if(this.are_you_sure_message != ""){
+            return
           }
         }
-        this.are_you_sure_flag = null
-
+        
 
         if(this.current_account){
           fetch(
@@ -529,12 +641,14 @@ const app = Vue.createApp({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ 
                 movement: this.current_movement_type,
-                amount: clean_price(this.current_transaction.amount), 
+                amount: clean_price(this.current_transaction.amount), // * (this.current_movement_type == 'output' ? -1: 1), 
+                tax: clean_price(this.tax),
                 where: this.current_account, 
-                code: this.calculate_initial_code,
                 description_short: this.short_description,
                 description_full: this.current_transaction.description,
-                date: this.current_transaction.date              
+                date: this.current_transaction.date,
+                code:             this.current_movement_type != 'transfer'? this.calculate_initial_code : null,
+                transfer_account: this.current_movement_type != 'transfer'? null : (this.account_names[this.transfer_account] + this.transfer_account_extra),
               })            
             })
             .then((response) => {
@@ -551,6 +665,7 @@ const app = Vue.createApp({
             })
             .catch((error) => {
               console.error(error); // log the error to the console
+              this.commit_message = error
               this.alert(error); // show an alert with the error message
             });
         }
@@ -625,7 +740,7 @@ const app = Vue.createApp({
       //  █▀ ▀█▀ ▄▀█ ▀█▀ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀   ▄▀█ █▀▀ █▀▀ █▀█ █ █ █▄ █ ▀█▀ █▀ 
       //  ▄█  █  █▀█  █  ██▄ █ ▀ █ ██▄ █ ▀█  █    █▀█ █▄▄ █▄▄ █▄█ █▄█ █ ▀█  █  ▄█ 
       //  
-      fetch("/data/config/accounts", {method:'GET'})
+      fetch("/data/config/all_accounts", {method:'GET'})
         .then((response) => {
           if (response.ok) { // if the status code is 200-299
             return response.json(); // parse the response as JSON
@@ -641,6 +756,26 @@ const app = Vue.createApp({
           this.alert(error); // show an alert with the error message
         });
 
+
+      //  █▀ ▀█▀ ▄▀█ ▀█▀ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀   ▄▀█ █▀▀ █▀▀ █▀█ █ █ █▄ █ ▀█▀ █▀ 
+      //  ▄█  █  █▀█  █  ██▄ █ ▀ █ ██▄ █ ▀█  █    █▀█ █▄▄ █▄▄ █▄█ █▄█ █ ▀█  █  ▄█ 
+      //  
+      fetch("/data/config/statment_accounts", {method:'GET'})
+        .then((response) => {
+          if (response.ok) { // if the status code is 200-299
+            return response.json(); // parse the response as JSON
+          } else {
+            throw new Error(response.statusText); // throw an error with the status text
+          }
+        })
+        .then((returned) => {
+          this.statement_account_names = returned.data;
+        })
+        .catch((error) => {
+          console.error(error); // log the error to the console
+          this.alert(error); // show an alert with the error message
+        });
+        
         
       //  █▀▄▀█ █▀█ █ █ █▀▀ █▀▄▀█ █▀▀ █▄ █ ▀█▀    ▀█▀ █▄█ █▀█ █▀▀ █▀ 
       //  █ ▀ █ █▄█ ▀▄▀ ██▄ █ ▀ █ ██▄ █ ▀█  █  ▄▄  █   █  █▀▀ ██▄ ▄█ 
@@ -792,5 +927,5 @@ console.log('starting mounted')
 
 
 function clean_price(price) {
-  return parseFloat(price.replace(/[^0-9.]+/g,""));
+  return parseFloat(String(price).replace(/[^\-0-9.]+/g,""));
 }

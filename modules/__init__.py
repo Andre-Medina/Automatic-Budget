@@ -5,6 +5,7 @@ main python file for importing the python code
 
 '''
 import json
+import os
 
 from .constants import *
 from .statements import *
@@ -12,6 +13,7 @@ from .statements import *
 __all__ = [
     'constants',
     'statements',
+    'move_statements',
     'json_save',
     'json_read',
     'text_save',
@@ -89,3 +91,72 @@ def text_save(object: dict, dir: str):
     with open(dir, 'w', encoding='utf-8') as file:
         file.write (str(object))
         file.close()
+
+
+
+#  █▀ █▀▀ █   █▀▀ █▀▀ ▀█▀   █▀▄▀█ █▀█ █▀ ▀█▀   █▀█ █▀▀ █▀▀ █▀▀ █▄ █ ▀█▀ 
+#  ▄█ ██▄ █▄▄ ██▄ █▄▄  █    █ ▀ █ █▄█ ▄█  █    █▀▄ ██▄ █▄▄ ██▄ █ ▀█  █  
+#  
+def select_most_recent(dir_path: str):
+    '''
+    finds the most recent file in a directory
+
+    ------
+    parameters
+    dir_path: str
+        directory for the file ending in '...folder/'
+
+    ------
+    return
+    : str
+        full path for most recent file in said directory as '...folder/file.ext'
+
+    '''
+
+    # get a list of all files in the directory
+    files = os.listdir(dir_path)
+    
+    # check if the list is not empty
+    if files:
+        
+        # creates full list
+        full_paths = [os.path.join(dir_path, file) for file in files]
+
+        # creates a list of times
+        files_with_times = {os.path.getctime(file_path): file_path for file_path in full_paths}
+        
+        # return the latest file
+        return files_with_times[max(files_with_times.keys())]
+    else:
+        # return None if no files found
+        raise FileNotFoundError('could not find a file or folder inside ' + dir_path)
+
+
+
+
+
+
+def move_statements():
+    """
+    moves files from 
+    UNSORTED_BANK_STATEMENTS_DIR 
+    to their specific bank account folders using
+    ACCOUNT_NUMBERS
+    """
+    print('moving files...')
+    # get a list of all files in the directory
+    files = os.listdir(ROOT_DIR + UNSORTED_BANK_STATEMENTS_DIR)
+
+    # check if the list is not empty
+    for file in files:
+        
+        print('\tmoving ' + file)
+        if file[0:9] in ACCOUNT_NUMBERS.keys():
+
+            # moves the file by renaming
+            os.rename(
+                ROOT_DIR + UNSORTED_BANK_STATEMENTS_DIR + file, 
+                ROOT_DIR + BANK_STATEMENTS_DIR + ACCOUNT_NUMBERS[file[0:9]] + '/' + file
+                )
+
+    print('moved all files!')

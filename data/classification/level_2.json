@@ -60,6 +60,10 @@
                     "r": {
                         "description": "KFC/ Red rooster",
                         "next": {}
+                    },
+                    "e": {
+                        "description": "African",
+                        "next": {}
                     }
                 }
             },
@@ -341,6 +345,10 @@
             },
             "e": {
                 "description": "Education",
+                "next": {}
+            },
+            "i": {
+                "description": "Insurance",
                 "next": {}
             },
             "s": {

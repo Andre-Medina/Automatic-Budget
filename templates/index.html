@@ -29,7 +29,7 @@ Vue.js Landing Page
     <section id="main" class="wrapper style1">
         <header class="major">
             <div class='container'>
-                <h2> Contact Us </h2>
+                <h2> Automatic Budget </h2>
             </div>
         </header>
         <div class='container'>
@@ -48,15 +48,15 @@ Vue.js Landing Page
                     --->
                     <div class="row">
                         <div class="4u">
-                            <div v-if="account_names" class="select-wrapper">
+                            <div v-if="statement_account_names" class="select-wrapper">
                                 <select v-model="current_account" @change="change_account($event.target.value);">
-                                    <option>-</option>
-                                    <option v-for="account in Object.keys(account_names)" :value="account" :key="account">[[ account_names[account] ]] - [[account]]</option>
+                                    <option :value="null">-</option>
+                                    <option v-for="account in Object.keys(statement_account_names)" :value="account" :key="account">[[ statement_account_names[account] ]] - [[account]]</option>
                                 </select>
                             </div>
                         </div> 
                         <div class="4u">
-                            a
+                            &nbsp
                         </div> 
                         <div class="4u">
                             <a class="button fit" @click="reset('all')">reset</a>
@@ -71,9 +71,13 @@ Vue.js Landing Page
                     --->
                     <div class="row">
                         <div class="4u">
-                            <ul class="actions">
-                                <li><a @click.prevent="prev_transaction(1)" @click.ctrl.prevent="prev_transaction(10)" @click.alt.prevent="prev_transaction(50)" class="button">Back</a></li>
-                                <li><a @click.prevent="next_transaction(1)" @click.ctrl.prevent="next_transaction(10)" @click.alt.prevent="next_transaction(50)" class="button">Next</a></li>
+                            <ul class="actions fit">
+                                <li><a @click.prevent="prev_transaction(1)" @click.ctrl.prevent="prev_transaction(10)" @click.alt.prevent="prev_transaction(50)" class="button fit">Back</a></li>
+                                <li><a @click.prevent="next_transaction(1)" @click.ctrl.prevent="next_transaction(10)" @click.alt.prevent="next_transaction(50)" class="button fit">Next</a></li>
+                            </ul>
+                            <ul class="actions fit">
+                                <li><a @click.prevent="reset('index')" class="button fit">to start</a></li>
+                                <li><button @click.prevent="next_transaction('new')" class="button fit">Next new</button></li>
                             </ul>
                         </div> 
                         <div class="8u table-wrapper">			
@@ -81,6 +85,7 @@ Vue.js Landing Page
                                 <thead>
                                     <tr>
                                         <th>no.</th>
+                                        <th>Exists</th>
                                         <th>Date</th>
                                         <th>Description</th>
                                         <th>Amount</th>
@@ -91,6 +96,7 @@ Vue.js Landing Page
                                 <tbody>
                                     <tr>
                                         <td>[[transaction_index + 1]]</td>
+                                        <td>[[transaction_classified? "Yes": ""]]</td>
                                         <td v-if="current_transaction">[[current_transaction.date]]</td>
                                         <td v-if="current_transaction">[[current_transaction.description]]</td>
                                         <td v-if="current_transaction">[[current_transaction.amount]]</td>
@@ -101,26 +107,45 @@ Vue.js Landing Page
                     </div> 
                     <br> 
                     <!---
+                    █▀▀▀ ▀▄   ▄▀ ▀▀█▀▀ █▀▀▀▄ ▄▀▀▀▄ 
+                    █▄▄    ▀▄▀     █   █▄▄▄▀ █▄▄▄█ 
+                    █     ▄▀ ▀▄    █   █  ▀█ █   █ 
+                    ▀▀▀▀ ▀     ▀   ▀   ▀   ▀ ▀   ▀ 
+                    ---->
+                    <div class = "row">
+                        <div class = "3u">Tax:</div>
+                        <div class = "3u"><input type="text" name="user" placeholder="tax" v-model="tax"></div>
+                    </div>
+                    <br>
+                    <!---
                     █▄   ▄█ ▄▀▀▀▀▄ █   █ █▀▀▀ █▄   ▄█ █▀▀▀ █▄    █ ▀▀█▀▀    ▄▀▀▀▀ █▀▀▀ █    █▀▀▀ ▄▀▀▀ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
                     █ ▀▄▀ █ █    █ ▀▄ ▄▀ █▄▄  █ ▀▄▀ █ █▄▄  █ ▀▄  █   █      ▀▄▄▄  █▄▄  █    █▄▄  █      █     █   █    █ █ ▀▄  █ 
                     █     █ █    █  █ █  █    █     █ █    █   ▀▄█   █          █ █    █    █    █      █     █   █    █ █   ▀▄█ 
                     ▀     ▀  ▀▀▀▀    ▀   ▀▀▀▀ ▀     ▀ ▀▀▀▀ ▀     ▀   ▀      ▀▀▀▀  ▀▀▀▀ ▀▀▀▀ ▀▀▀▀  ▀▀▀   ▀   ▀▀▀▀▀  ▀▀▀▀  ▀     ▀ 
                     --->
-                    <div>
-                        <ul v-if="movement_types" class="actions fit">
-                            <li v-for="movement_type in movement_types"><a class="button fit" :class="[current_movement_type == movement_type ? 'special' : '']"  @click="current_movement_type = movement_type">[[movement_type]]</a></li>
-                            <!--  -->
-                        </ul>
-                    </div>
-                    <br>                    <!---
-                        █▀▀▀▄ █▀▀▀ ▄▀▀▀▀ ▄▀▀▀ █▀▀▀▄ ▀▀█▀▀ █▀▀▄ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
-                        █   █ █▄▄  ▀▄▄▄  █    █▄▄▄▀   █   █▄▄▀   █     █   █    █ █ ▀▄  █ 
-                        █   █ █        █ █    █  ▀█   █   █      █     █   █    █ █   ▀▄█ 
-                        ▀▀▀▀  ▀▀▀▀ ▀▀▀▀   ▀▀▀ ▀   ▀ ▀▀▀▀▀ ▀      ▀   ▀▀▀▀▀  ▀▀▀▀  ▀     ▀ 
-                        --->
-                    <div class = "row">
-                        <div class = "-3u 3u"><span style="font-size: 2em;">Description:</span></div>
-                        <div class = "3u" ><input type="text" name="user" placeholder="short description" v-model="short_description"></div>
+                    <div v-if="movement_types" class = "row fit">
+                        <div class = "3u">
+                            <a class="button fit" @click="reset('movement')">reset movement</a></li>
+                        </div>
+                        <div class = "3u">
+                            <div class="select-wrapper">
+                                <select v-model="current_movement_type" @change="current_movement_type = $event.target.value">
+                                    <option :value="null">-</option>
+                                    <option v-for="movement_type in movement_types" :value="movement_type" key="movement_type">[[movement_type]]</option>
+                                </select>
+                            </div>
+                        </div>
+                               <!---
+                            █▀▀▀▄ █▀▀▀ ▄▀▀▀▀ ▄▀▀▀ █▀▀▀▄ ▀▀█▀▀ █▀▀▄ ▀▀█▀▀ ▀▀█▀▀ ▄▀▀▀▀▄ █▄    █ 
+                            █   █ █▄▄  ▀▄▄▄  █    █▄▄▄▀   █   █▄▄▀   █     █   █    █ █ ▀▄  █ 
+                            █   █ █        █ █    █  ▀█   █   █      █     █   █    █ █   ▀▄█ 
+                            ▀▀▀▀  ▀▀▀▀ ▀▀▀▀   ▀▀▀ ▀   ▀ ▀▀▀▀▀ ▀      ▀   ▀▀▀▀▀  ▀▀▀▀  ▀     ▀ 
+                            --->
+                        <div class = "3u">
+                            <a class="button fit" @click="reset('description')">clear description</a>
+                        </div>
+                        <div class = "1u"><span style="font-size: 1em;">Description:</span></div>
+                        <div class = "2u" ><input type="text" name="user" placeholder="short description" v-model="short_description"></div>
                     </div>
                     <br/>
                     <!---
@@ -129,45 +154,67 @@ Vue.js Landing Page
                     █    █    █ █   █ █    
                      ▀▀▀  ▀▀▀▀  ▀▀▀▀  ▀▀▀▀ 
                     --->
-                    <div>
-                        <ul class="actions fit">
-                            <li><a class="button fit" @click="reset('code')">clear code</a></li>
-                            <li v-if="description_levels.level_1" >
-                                <div class="select-wrapper">
-                                    <select v-model="selected_code[0]" @change="set_description($event.target.value, 0)">
-                                        <option>-</option>
-                                        <option v-for="code in Object.keys(description_levels.level_1)" :value="code" key="code">[[code]] - [[description_levels.level_1[code].description]]</option>
-                                    </select>
-                                </div>
-                            </li>
-                            <li v-if="description_levels.level_2"  v-for="level_index in (level_depth - 1)"> <!--- Object.keys(description_levels.level_2).length"> --->
-                                <div v-if="selected_levels[level_index] && (Object.keys(selected_levels[level_index]).length > 0)" class="select-wrapper">
-                                    <select name="category" id="category" v-model="selected_code[level_index]" @change="set_description($event.target.value, level_index)">
-                                        <option>-</option>
-                                        <option v-for="code in Object.keys(selected_levels[level_index])" :value="code" key="code">[[code]] - [[selected_levels[level_index][code].description]]</option>
-                                    </select>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="row">
-                        <div class = "4u">
-                            <a class="button fit" @click="reset('tag')">clear tag</a>
-                        </div>
-                        <div class = "4u">
+                    <div v-if="current_movement_type != 'transfer'">
+                        <div>
                             <ul class="actions fit">
-                                <li v-if="description_levels.level_3"  v-for="level_index in (tag_level_depth)">
-                                    <div v-if="tag_selected_levels[level_index - 1] && (Object.keys(tag_selected_levels[level_index - 1]).length > 0)" class="select-wrapper">
-                                        <select name="category" id="category" v-model="code_tag.selected_tag[level_index - 1]" @change="set_description($event.target.value, level_index - 1, true)">
+                                <li><a class="button fit" @click="reset('code')">clear code</a></li>
+                                <li v-if="description_levels.level_1" >
+                                    <div class="select-wrapper">
+                                        <select v-model="selected_code[0]" @change="set_description($event.target.value, 0)">
                                             <option :value="null">-</option>
-                                            <option v-for="code in Object.keys(tag_selected_levels[level_index - 1])" :value="code" key="code">[[code]] - [[tag_selected_levels[level_index - 1][code].description]]</option>
+                                            <option v-for="code in Object.keys(description_levels.level_1)" :value="code" key="code">[[code]] - [[description_levels.level_1[code].description]]</option>
+                                        </select>
+                                    </div>
+                                </li>
+                                <li v-if="description_levels.level_2"  v-for="level_index in (level_depth - 1)"> <!--- Object.keys(description_levels.level_2).length"> --->
+                                    <div v-if="selected_levels[level_index] && (Object.keys(selected_levels[level_index]).length > 0)" class="select-wrapper">
+                                        <select name="category" id="category" v-model="selected_code[level_index]" @change="set_description($event.target.value, level_index)">
+                                            <option :value="null">-</option>
+                                            <option v-for="code in Object.keys(selected_levels[level_index])" :value="code" key="code">[[code]] - [[selected_levels[level_index][code].description]]</option>
                                         </select>
                                     </div>
                                 </li>
                             </ul>
                         </div>
+                        <div class="row">
+                            <div class = "4u">
+                                <a class="button fit" @click="reset('tag')">clear tag</a>
+                            </div>
+                            <div class = "4u">
+                                <ul class="actions fit">
+                                    <li v-if="description_levels.level_3"  v-for="level_index in (tag_level_depth)">
+                                        <div v-if="tag_selected_levels[level_index - 1] && (Object.keys(tag_selected_levels[level_index - 1]).length > 0)" class="select-wrapper">
+                                            <select name="category" id="category" v-model="code_tag.selected_tag[level_index - 1]" @change="set_description($event.target.value, level_index - 1, true)">
+                                                <option :value="null">-</option>
+                                                <option v-for="code in Object.keys(tag_selected_levels[level_index - 1])" :value="code" key="code">[[code]] - [[tag_selected_levels[level_index - 1][code].description]]</option>
+                                            </select>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class = "4u">
+                                <input type="text" name="user" placeholder="short description" v-model="code_tag.extra">
+                            </div>
+                        </div>
+                    </div>
+                    <!---
+                    ▀█▀ █▀█ ▄▀█ █▄ █ █▀ █▀▀ █▀▀ █▀█ 
+                     █  █▀▄ █▀█ █ ▀█ ▄█ █▀  ██▄ █▀▄ 
+                    ---->
+                    <div v-if="current_movement_type == 'transfer'" class ="row">
                         <div class = "4u">
-                            <input type="text" name="user" placeholder="short description" v-model="code_tag.extra">
+                            <a class="button fit" @click.prevent="reset('transfer')">clear transfer</a>
+                        </div>
+                        <div class="4u">
+                            <div v-if="account_names" class="select-wrapper">
+                                <select v-model="transfer_account" @change="transfer_account = $event.target.value;">
+                                    <option :value="null">-</option>
+                                    <option v-for="account in Object.keys(account_names)" :value="account" :key="account">[[ account_names[account] ]] - [[account]]</option>
+                                </select>
+                            </div>
+                        </div> 
+                        <div class = "4u">
+                            <input type="text" name="user" placeholder="extra transfer" v-model="transfer_account_extra">
                         </div>
                     </div>
                     <!---
@@ -182,8 +229,8 @@ Vue.js Landing Page
                                 <tr>
                                     <th>Movement</th>
                                     <th>Amount</th>
-                                    <th>Where</th>
-                                    <th>Why</th>
+                                    <th>[[current_movement_type != 'transfer'? 'Where' : 'From']]</th>
+                                    <th>[[current_movement_type != 'transfer'? 'Why' : 'To']]</th>
                                     <th>Description</th>
                                     <th>Date</th>
                                 </tr>
@@ -194,7 +241,7 @@ Vue.js Landing Page
                                     <td>[[current_movement_type]]</td>
                                     <td>[[current_transaction.amount]]</td>
                                     <td>[[ account_names[current_account] ]]</td>
-                                    <td>[[calculate_initial_code]]</td>
+                                    <td>[[current_movement_type != 'transfer'? calculate_initial_code : (account_names[transfer_account] + transfer_account_extra)]]</td>
                                     <td>[[short_description]]</td>
                                     <td>[[current_transaction.date]]</td>
                                 </tr>
@@ -203,7 +250,6 @@ Vue.js Landing Page
                         
                         <!-- <p>Age: [[data.age ]]</p> -->
                     </div>
-                    <br/>
                     <!---
                     ▄▀▀▀▀ █   █ █▀▀▀▄ █▄   ▄█ ▀▀█▀▀ ▀▀█▀▀ 
                     ▀▄▄▄  █   █ █▄▄▄▀ █ ▀▄▀ █   █     █   
@@ -213,10 +259,10 @@ Vue.js Landing Page
                     <div v-if="current_transaction != null" class="row">
                         <div class="4u">
                             <div v-if="!new_data">&nbsp</div>
-                            <a v-if="new_data" class="button fit" name="Submit" @click.prevent="submit_transaction()">commit</a>
+                            <button v-if="new_data" class="button fit" name="Submit" @click.prevent="submit_transaction()">commit</button>
                         </div>
-                        <div class="4u right">[[ are_you_sure_flag ? 'are your sure?' : commit_message]]</div>
-                        <div class="4u"><a v-if="are_you_sure_flag"  class="button fit" name="Submit" @click.prevent="submit_transaction(true)">yes</a></div>
+                        <div class="4u right">[[ are_you_sure_message != "" ? 'are your sure?' + are_you_sure_message : commit_message]]</div>
+                        <div class="4u"><a v-if="are_you_sure_message != ''"  class="button fit" name="Submit" @click.prevent="submit_transaction(true)">yes</a></div>
                         
                     </div>
                 </form>  

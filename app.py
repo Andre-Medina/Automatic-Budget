@@ -22,6 +22,11 @@ statements = md.statements.Statements()
 # Create an instance of Flask class
 app = Flask(__name__)
 
+
+# moves files around
+md.move_statements()
+
+
 #  ██ ███    ██ ██████  ███████ ██   ██ 
 #  ██ ████   ██ ██   ██ ██       ██ ██  
 #  ██ ██ ██  ██ ██   ██ █████     ███   
@@ -110,18 +115,35 @@ def get_data(data_type, extra):
         elif data_type == "statement":
             extra
             transaction = request.args.get('transaction', default = 0, type = int)
+            transaction_new = True if request.args.get('new') == '1' else False
+
+            print(f'finding transaction: {transaction}, looking for new: {transaction_new}')
+            # if looking for a new transaction
+            if transaction_new:
+                result = statements.get_transaction_new(extra, transaction)
+
+            # otherwise old method
+            else:
+                result = statements.get_transaction(extra, transaction)
+
+            # extracting results
             (
                 response_object['data'],
                 response_object["message"],
                 response_object['status'],
-            ) = statements.get_transaction(extra, transaction)
+            ) = result
 
 
 
         #  █▀▀ █▀█ █▄ █ █▀▀ █ █▀▀ 
         #  █▄▄ █▄█ █ ▀█ █▀  █ █▄█ 
         #  
-        elif data_type == "config" and extra == "accounts":
+        elif data_type == "config" and extra == "statment_accounts":
+            response_object['data'] = md.COMMON_STATEMENT_ACCOUNTS
+            response_object["message"] = 'success'
+            response_object['status'] = 200
+            
+        elif data_type == "config" and extra == "all_accounts":
             response_object['data'] = md.ALL_ACCOUNT_LIKE
             response_object["message"] = 'success'
             response_object['status'] = 200
@@ -143,7 +165,7 @@ def get_data(data_type, extra):
     elif request.method == "POST":
         if data_type == "statement":
             response_object['message'], response_object['status'] = statements.post_transaction(json.loads(request.data.decode()))
-        
+
         else:
             response_object['message'] = "page not found"
             response_object['status'] = 404
@@ -152,7 +174,9 @@ def get_data(data_type, extra):
         response_object['message'] = "please use get"
         response_object['status'] = 400
     
+    print('---Returning data----')
     print(response_object)
+    print('---------------------')
     return jsonify(response_object), f"{response_object['status']} {response_object['message']}"
 
 
