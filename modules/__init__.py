@@ -123,8 +123,10 @@ def select_most_recent(dir_path: str):
         full_paths = [os.path.join(dir_path, file) for file in files]
 
         # creates a list of times
-        files_with_times = {os.path.getctime(file_path): file_path for file_path in full_paths}
-        
+        files_with_times = {os.path.getmtime(file_path): file_path for file_path in full_paths}   # TODO: is getmtime the best? getctime was funky.
+
+        print(f'\t most recent selected to be: {files_with_times[max(files_with_times.keys())]}')
+
         # return the latest file
         return files_with_times[max(files_with_times.keys())]
     else:
@@ -152,11 +154,17 @@ def move_statements():
         
         print('\tmoving ' + file)
         if file[0:9] in ACCOUNT_NUMBERS.keys():
+            
+            try:
+                # moves the file by renaming
+                os.rename(
+                    ROOT_DIR + UNSORTED_BANK_STATEMENTS_DIR + file, 
+                    ROOT_DIR + BANK_STATEMENTS_DIR + ACCOUNT_NUMBERS[file[0:9]] + '/' + file
+                    )
+            except FileExistsError:
+                print('\t\t file already exists, skipping')
 
-            # moves the file by renaming
-            os.rename(
-                ROOT_DIR + UNSORTED_BANK_STATEMENTS_DIR + file, 
-                ROOT_DIR + BANK_STATEMENTS_DIR + ACCOUNT_NUMBERS[file[0:9]] + '/' + file
-                )
+        else:
+            print(f"\taccount {file[0:9]} not recognised")
 
     print('moved all files!')
